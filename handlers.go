@@ -5,6 +5,20 @@ import (
 	"net/http"
 )
 
+func login(context *gin.Context) {
+	var user user
+
+	// convert received json to a user
+	if err := context.BindJSON(&user); err != nil {
+		context.IndentedJSON(
+			http.StatusBadRequest,
+			gin.H{"error": "Can't convert body to user"},
+		)
+
+		return
+	}
+}
+
 func getTodos(context *gin.Context) {
 	context.IndentedJSON(http.StatusOK, dummyTodos)
 }
@@ -14,6 +28,11 @@ func addTodo(context *gin.Context) {
 
 	// convert received json to a new Todo
 	if err := context.BindJSON(&newTodo); err != nil {
+		context.IndentedJSON(
+			http.StatusBadRequest,
+			gin.H{"error": "Can't convert body to Todo item"},
+		)
+
 		return
 	}
 

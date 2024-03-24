@@ -11,7 +11,10 @@ import (
 func main() {
 	router := gin.Default()
 
-	// routes
+	// routes for registration and login
+	router.POST("/login", login)
+
+	// routes for handling Todo items
 	router.GET("/todos", getTodos)
 	router.GET("/todos/:id", getTodoByID)
 	router.POST("/todos", addTodo)
