@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/tim-w97/my-awesome-Todo-API/data"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
@@ -32,7 +33,7 @@ func GetTodoByID(context *gin.Context) {
 	id := context.Param("id")
 
 	for _, todo := range data.DummyTodos {
-		if todo.ID == id {
+		if fmt.Sprint(todo.ID) == id {
 			context.IndentedJSON(http.StatusOK, todo)
 			return
 		}
