@@ -57,10 +57,10 @@ func Login(context *gin.Context) {
 	}
 
 	// Generate the JSON Web Token and add the username to the claims
-	// The token expires after 8 hours
+	// The token expires after 1 hour
 	claims := jwt.MapClaims{
 		"sub": user.Username,
-		"exp": time.Now().Add(time.Hour * 8).Unix(),
+		"exp": time.Now().Add(time.Hour).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -76,6 +76,17 @@ func Login(context *gin.Context) {
 
 		return
 	}
+
+	// Set the json web token as cookie with a max age of 1 hour
+	context.SetCookie(
+		"Authorization",
+		tokenString,
+		3600,
+		"",
+		"",
+		false,
+		true,
+	)
 
 	context.IndentedJSON(
 		http.StatusOK,

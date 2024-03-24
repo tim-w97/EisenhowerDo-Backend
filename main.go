@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	"github.com/tim-w97/my-awesome-Todo-API/handlers"
+	"github.com/tim-w97/my-awesome-Todo-API/middleware"
 	"log"
 	"os"
 )
@@ -16,9 +17,9 @@ func main() {
 	router.POST("/login", handlers.Login)
 
 	// routes for handling Todo items
-	router.GET("/todos", handlers.GetTodos)
-	router.GET("/todos/:id", handlers.GetTodoByID)
-	router.POST("/todos", handlers.AddTodo)
+	router.GET("/todos", middleware.RequireAuth, handlers.GetTodos)
+	router.GET("/todos/:id", middleware.RequireAuth, handlers.GetTodoByID)
+	router.POST("/todos", middleware.RequireAuth, handlers.AddTodo)
 
 	// load port from environment variables
 	if err := godotenv.Load(); err != nil {
