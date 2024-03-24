@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"log"
+	"os"
 )
 
 func main() {
@@ -13,9 +16,16 @@ func main() {
 	router.GET("/todos/:id", getTodoByID)
 	router.POST("/todos", addTodo)
 
-	err := router.Run("localhost:8080")
+	// load port from environment variables
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Can't load the .env file")
+	}
 
-	if err != nil {
-		log.Fatal("Can't start the server:", err)
+	port := os.Getenv("PORT")
+	hostnameAndPort := fmt.Sprintf("localhost:%s", port)
+
+	// run the awesome Todo API
+	if err := router.Run(hostnameAndPort); err != nil {
+		log.Fatal("Can't run awesome Todo API:", err)
 	}
 }
