@@ -1,14 +1,16 @@
-package main
+package handlers
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/tim-w97/my-awesome-Todo-API/data"
+	"github.com/tim-w97/my-awesome-Todo-API/types"
 	"net/http"
 	"time"
 )
 
-func login(context *gin.Context) {
-	var requestedUser user
+func Login(context *gin.Context) {
+	var requestedUser types.User
 
 	// convert received json to a user
 	if err := context.BindJSON(&requestedUser); err != nil {
@@ -20,16 +22,16 @@ func login(context *gin.Context) {
 		return
 	}
 
-	var foundUser user
+	var foundUser types.User
 
-	for _, dummyUser := range dummyUsers {
+	for _, dummyUser := range data.DummyUsers {
 		if dummyUser.Username == requestedUser.Username {
 			foundUser = dummyUser
 			break
 		}
 	}
 
-	if foundUser == (user{}) {
+	if foundUser == (types.User{}) {
 		context.IndentedJSON(
 			http.StatusBadRequest,
 			gin.H{"error": "This user doesn't exist"},
@@ -60,42 +62,5 @@ func login(context *gin.Context) {
 	context.IndentedJSON(
 		http.StatusOK,
 		gin.H{"jwt": token},
-	)
-}
-
-func getTodos(context *gin.Context) {
-	context.IndentedJSON(http.StatusOK, dummyTodos)
-}
-
-func addTodo(context *gin.Context) {
-	var newTodo todo
-
-	// convert received json to a new Todo
-	if err := context.BindJSON(&newTodo); err != nil {
-		context.IndentedJSON(
-			http.StatusBadRequest,
-			gin.H{"error": "Can't convert body to Todo item"},
-		)
-
-		return
-	}
-
-	dummyTodos = append(dummyTodos, newTodo)
-	context.IndentedJSON(http.StatusCreated, newTodo)
-}
-
-func getTodoByID(context *gin.Context) {
-	id := context.Param("id")
-
-	for _, todo := range dummyTodos {
-		if todo.ID == id {
-			context.IndentedJSON(http.StatusOK, todo)
-			return
-		}
-	}
-
-	context.IndentedJSON(
-		http.StatusNotFound,
-		gin.H{"message": "todo not found"},
 	)
 }
