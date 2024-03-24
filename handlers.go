@@ -6,10 +6,10 @@ import (
 )
 
 func login(context *gin.Context) {
-	var user user
+	var requestedUser user
 
 	// convert received json to a user
-	if err := context.BindJSON(&user); err != nil {
+	if err := context.BindJSON(&requestedUser); err != nil {
 		context.IndentedJSON(
 			http.StatusBadRequest,
 			gin.H{"error": "Can't convert body to user"},
@@ -17,6 +17,29 @@ func login(context *gin.Context) {
 
 		return
 	}
+
+	var foundUser user
+
+	for _, dummyUser := range dummyUsers {
+		if dummyUser.Username == requestedUser.Username {
+			foundUser = dummyUser
+			break
+		}
+	}
+
+	if foundUser == (user{}) {
+		context.IndentedJSON(
+			http.StatusBadRequest,
+			gin.H{"error": "This user doesn't exist"},
+		)
+
+		return
+	}
+
+	context.IndentedJSON(
+		http.StatusOK,
+		gin.H{"message": "User exists"},
+	)
 }
 
 func getTodos(context *gin.Context) {
