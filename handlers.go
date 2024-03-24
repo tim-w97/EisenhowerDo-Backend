@@ -2,7 +2,9 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 	"net/http"
+	"time"
 )
 
 func login(context *gin.Context) {
@@ -36,9 +38,28 @@ func login(context *gin.Context) {
 		return
 	}
 
+	// TODO: Use password hashes
+	if foundUser.Password != requestedUser.Password {
+		context.IndentedJSON(
+			http.StatusBadRequest,
+			gin.H{"error": "Your password is incorrect"},
+		)
+
+		return
+	}
+
+	// Generate the JSON Web Token and add the username to the claims
+	// The token expires after 8 hours
+	claims := jwt.MapClaims{
+		"sub": foundUser.Username,
+		"exp": time.Now().Add(time.Hour * 8).Unix(),
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
 	context.IndentedJSON(
 		http.StatusOK,
-		gin.H{"message": "User exists"},
+		gin.H{"jwt": token},
 	)
 }
 
