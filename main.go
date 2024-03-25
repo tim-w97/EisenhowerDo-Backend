@@ -15,7 +15,7 @@ import (
 func main() {
 	// Load environment variables from .env file
 	if err := godotenv.Load(); err != nil {
-		log.Fatal("Can't load the .env file")
+		log.Fatal("Can't load the .env file: ", err)
 	}
 
 	// Create connection to MySQL Database
@@ -24,13 +24,11 @@ func main() {
 	mySQLAddress := fmt.Sprintf("%s:%s", mySQLHost, mySQLPort)
 
 	mySQLConfig := mysql.Config{
-		User:   os.Getenv("MYSQL_USER"),
-		Passwd: os.Getenv("MYSQL_PASS"),
-		Net:    "tcp",
-		Addr:   mySQLAddress,
-		DBName: os.Getenv("MYSQL_DB"),
-
-		// TODO: Is this bad?
+		User:                 os.Getenv("MYSQL_USER"),
+		Passwd:               os.Getenv("MYSQL_PASS"),
+		Net:                  "tcp",
+		Addr:                 mySQLAddress,
+		DBName:               os.Getenv("MYSQL_DB"),
 		AllowNativePasswords: true,
 	}
 
@@ -44,7 +42,7 @@ func main() {
 	pingErr := db.Ping()
 
 	if pingErr != nil {
-		log.Fatal("Can't ping the MySQL Database")
+		log.Fatal("Can't ping the MySQL Database: ", pingErr)
 	}
 
 	// Set up routes
