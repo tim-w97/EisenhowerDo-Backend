@@ -37,6 +37,8 @@ func getSecret(_ *jwt.Token) (interface{}, error) {
 func requireAuth(context *gin.Context) {
 	tokenString, cookieError := context.Cookie("Authorization")
 
+	// If this function returns unexpectedly,
+	// defer an abort to break the chain with an unauthorized status
 	defer context.AbortWithStatus(http.StatusUnauthorized)
 
 	if cookieError != nil {
