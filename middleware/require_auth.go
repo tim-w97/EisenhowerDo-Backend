@@ -11,6 +11,10 @@ import (
 	"time"
 )
 
+func JWTAuth() gin.HandlerFunc {
+	return requireAuth
+}
+
 // TODO: This is duplicated code, see login.go
 func getUser(username string) (types.User, error) {
 	for _, dummyUser := range data.DummyUsers {
@@ -30,24 +34,26 @@ func getSecret(_ *jwt.Token) (interface{}, error) {
 	return []byte(secret), nil
 }
 
-func RequireAuth(context *gin.Context) {
+func requireAuth(context *gin.Context) {
 	tokenString, cookieError := context.Cookie("Authorization")
 
+	defer context.AbortWithStatus(http.StatusUnauthorized)
+
 	if cookieError != nil {
-		context.AbortWithStatus(http.StatusUnauthorized)
+		return
 	}
 
 	token, parseError := jwt.Parse(tokenString, getSecret)
 
 	if parseError != nil || !token.Valid {
-		context.AbortWithStatus(http.StatusUnauthorized)
+		return
 	}
 
 	// Get the claims from the token
 	claims, ok := token.Claims.(jwt.MapClaims)
 
 	if !ok {
-		context.AbortWithStatus(http.StatusUnauthorized)
+		return
 	}
 
 	// Check if the token is expired
@@ -55,7 +61,7 @@ func RequireAuth(context *gin.Context) {
 	tokenExpireTime := claims["exp"].(float64)
 
 	if currentTime > tokenExpireTime {
-		context.AbortWithStatus(http.StatusUnauthorized)
+		return
 	}
 
 	// Get the username from the token and search the corresponding user
@@ -64,7 +70,7 @@ func RequireAuth(context *gin.Context) {
 	user, searchError := getUser(username)
 
 	if searchError != nil {
-		context.AbortWithStatus(http.StatusUnauthorized)
+		return
 	}
 
 	context.Set("user", user)
