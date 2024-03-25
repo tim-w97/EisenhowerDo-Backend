@@ -8,6 +8,9 @@ import (
 	"os"
 )
 
+// Database variable to access the database from other packages
+var Database *sql.DB
+
 func ConnectToDatabase() {
 	mySQLHost := os.Getenv("MYSQL_HOST")
 	mySQLPort := os.Getenv("MYSQL_PORT")
@@ -22,14 +25,16 @@ func ConnectToDatabase() {
 		AllowNativePasswords: true,
 	}
 
-	db, dbError := sql.Open("mysql", mySQLConfig.FormatDSN())
+	// I need to declare dbError outside to avoid a scope issue
+	// on this way, the global Database variable gets assigned
+	var dbError error
+	Database, dbError = sql.Open("mysql", mySQLConfig.FormatDSN())
 
 	if dbError != nil {
 		log.Fatal("Can't connect to the MySQL Database")
 	}
 
-	// Test the database connection
-	pingErr := db.Ping()
+	pingErr := Database.Ping()
 
 	if pingErr != nil {
 		log.Fatal("Can't ping the MySQL Database: ", pingErr)
