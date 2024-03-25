@@ -6,6 +6,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/tim-w97/my-awesome-Todo-API/data"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -35,19 +36,26 @@ func getSecret(_ *jwt.Token) (interface{}, error) {
 }
 
 func requireAuth(context *gin.Context) {
-	tokenString, cookieError := context.Cookie("Authorization")
-
 	// If this function returns unexpectedly,
 	// defer an abort to break the chain with an unauthorized status
 	defer context.AbortWithStatus(http.StatusUnauthorized)
 
+	tokenString, cookieError := context.Cookie("Authorization")
+
 	if cookieError != nil {
+		log.Print("Can't get cookie with JWT token: ", cookieError)
 		return
 	}
 
 	token, parseError := jwt.Parse(tokenString, getSecret)
 
-	if parseError != nil || !token.Valid {
+	if parseError != nil {
+		log.Print("Can't parse JWT token: ", parseError)
+		return
+	}
+
+	if !token.Valid {
+		log.Print("JWT token is invalid")
 		return
 	}
 
@@ -55,6 +63,7 @@ func requireAuth(context *gin.Context) {
 	claims, ok := token.Claims.(jwt.MapClaims)
 
 	if !ok {
+		log.Print("Can't get claims from JWT token")
 		return
 	}
 
@@ -63,6 +72,7 @@ func requireAuth(context *gin.Context) {
 	tokenExpireTime := claims["exp"].(float64)
 
 	if currentTime > tokenExpireTime {
+		log.Print("JWT token is expired")
 		return
 	}
 
@@ -72,11 +82,12 @@ func requireAuth(context *gin.Context) {
 	user, searchError := getUser(username)
 
 	if searchError != nil {
+		log.Print("Can't find user from JWT token: ", searchError)
 		return
 	}
 
 	context.Set("user", user)
 
-	// Continue with the request
+	// Continue with the request if everything goes well
 	context.Next()
 }
