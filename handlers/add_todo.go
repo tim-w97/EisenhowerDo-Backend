@@ -1,16 +1,11 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/tim-w97/my-awesome-Todo-API/data"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
 	"net/http"
 )
-
-func GetTodos(context *gin.Context) {
-	context.IndentedJSON(http.StatusOK, data.DummyTodos)
-}
 
 func AddTodo(context *gin.Context) {
 	var newTodo types.Todo
@@ -27,20 +22,4 @@ func AddTodo(context *gin.Context) {
 
 	data.DummyTodos = append(data.DummyTodos, newTodo)
 	context.IndentedJSON(http.StatusCreated, newTodo)
-}
-
-func GetTodoByID(context *gin.Context) {
-	id := context.Param("id")
-
-	for _, todo := range data.DummyTodos {
-		if fmt.Sprint(todo.ID) == id {
-			context.IndentedJSON(http.StatusOK, todo)
-			return
-		}
-	}
-
-	context.IndentedJSON(
-		http.StatusNotFound,
-		gin.H{"message": "todo not found"},
-	)
 }
