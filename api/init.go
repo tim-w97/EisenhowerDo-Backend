@@ -16,10 +16,16 @@ func InitRoutesAndRun() {
 	// routes for registration and login
 	router.POST("/login", handlers.Login)
 
-	// routes for handling Todo items
-	router.GET("/todos", middleware.RequireAuth, handlers.GetTodos)
-	router.GET("/todos/:id", middleware.RequireAuth, handlers.GetTodoByID)
-	router.POST("/todos", middleware.RequireAuth, handlers.AddTodo)
+	authorized := router.Group("/")
+
+	authorized.Use(middleware.JWTAuth())
+	{
+		// routes secured with JSON Web Token
+		authorized.GET("/todos", handlers.GetTodos)
+		authorized.GET("/todos/:id", handlers.GetTodoByID)
+
+		authorized.POST("/todos", handlers.AddTodo)
+	}
 
 	port := os.Getenv("PORT")
 	address := fmt.Sprintf("localhost:%s", port)
