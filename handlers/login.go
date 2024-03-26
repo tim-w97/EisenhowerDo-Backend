@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/tim-w97/my-awesome-Todo-API/data"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
 	"net/http"
 	"os"
