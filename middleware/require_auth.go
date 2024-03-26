@@ -36,14 +36,11 @@ func getSecret(_ *jwt.Token) (interface{}, error) {
 }
 
 func requireAuth(context *gin.Context) {
-	// If this function returns unexpectedly,
-	// defer an abort to break the chain with an unauthorized status
-	defer context.AbortWithStatus(http.StatusUnauthorized)
-
 	tokenString, cookieError := context.Cookie("Authorization")
 
 	if cookieError != nil {
 		log.Print("Can't get cookie with JWT token: ", cookieError)
+		context.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
@@ -51,11 +48,13 @@ func requireAuth(context *gin.Context) {
 
 	if parseError != nil {
 		log.Print("Can't parse JWT token: ", parseError)
+		context.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
 	if !token.Valid {
 		log.Print("JWT token is invalid")
+		context.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
@@ -64,6 +63,7 @@ func requireAuth(context *gin.Context) {
 
 	if !ok {
 		log.Print("Can't get claims from JWT token")
+		context.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
@@ -73,6 +73,7 @@ func requireAuth(context *gin.Context) {
 
 	if currentTime > tokenExpireTime {
 		log.Print("JWT token is expired")
+		context.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
@@ -83,6 +84,7 @@ func requireAuth(context *gin.Context) {
 
 	if searchError != nil {
 		log.Print("Can't find user from JWT token: ", searchError)
+		context.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
