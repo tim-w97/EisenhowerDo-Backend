@@ -9,7 +9,8 @@ import (
 )
 
 func GetTodos(context *gin.Context) {
-	var todos []types.Todo
+	// create an empty slice of todos
+	todos := make([]types.Todo, 0)
 
 	rows, queryErr := db.Database.Query("SELECT * FROM todo")
 
