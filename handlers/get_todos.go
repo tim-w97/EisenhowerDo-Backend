@@ -9,32 +9,38 @@ import (
 )
 
 func GetTodos(context *gin.Context) {
+	defer context.AbortWithStatus(http.StatusInternalServerError)
+
 	// create an empty slice of todos
 	todos := make([]types.Todo, 0)
 
 	rows, queryErr := db.Database.Query("SELECT * FROM todo")
 
 	if queryErr != nil {
-		log.Fatal("Can't query todos from database: ", queryErr)
+		log.Print("Can't query todos from database: ", queryErr)
+		return
 	}
 
 	for rows.Next() {
 		var todo types.Todo
 
 		if scanErr := rows.Scan(&todo.ID, &todo.Title, &todo.Text); scanErr != nil {
-			log.Fatal("Can't assign todo row to todo struct: ", scanErr)
+			log.Print("Can't assign todo row to todo struct: ", scanErr)
+			return
 		}
 
 		todos = append(todos, todo)
 	}
 
 	if closeErr := rows.Close(); closeErr != nil {
-		log.Fatal("Can't close database todo rows: ", closeErr)
+		log.Print("Can't close database todo rows: ", closeErr)
+		return
 	}
 
 	// Check for an error from the overall query
 	if rowsErr := rows.Err(); rowsErr != nil {
-		log.Fatal("The query for todo rows threw an error: ", rows)
+		log.Print("The query for todo rows threw an error: ", rowsErr)
+		return
 	}
 
 	context.IndentedJSON(http.StatusOK, todos)
