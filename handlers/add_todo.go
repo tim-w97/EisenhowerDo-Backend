@@ -22,6 +22,24 @@ func AddTodo(context *gin.Context) {
 		return
 	}
 
+	if len(newTodo.Title) == 0 {
+		context.IndentedJSON(
+			http.StatusBadRequest,
+			gin.H{"error": "please add a title"},
+		)
+
+		return
+	}
+
+	if len(newTodo.Text) == 0 {
+		context.IndentedJSON(
+			http.StatusBadRequest,
+			gin.H{"error": "please add a text"},
+		)
+
+		return
+	}
+
 	result, insertErr := db.Database.Exec(
 		"INSERT INTO todo (title, text) VALUES (?, ?)",
 		newTodo.Title,
