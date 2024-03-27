@@ -114,9 +114,8 @@ func Login(context *gin.Context) {
 		true,
 	)
 
-	// TODO: add expire time
 	context.IndentedJSON(
 		http.StatusOK,
-		gin.H{"jwt": tokenString},
+		gin.H{"message": "login successful"},
 	)
 }
