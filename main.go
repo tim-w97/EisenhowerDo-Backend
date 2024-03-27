@@ -7,6 +7,7 @@ import (
 	"log"
 )
 
+// TODO: add documentation to all functions
 func main() {
 	// Load environment variables from .env file
 	if err := godotenv.Load(); err != nil {

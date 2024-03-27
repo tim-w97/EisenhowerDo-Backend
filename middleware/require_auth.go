@@ -17,7 +17,6 @@ func JWTAuth() gin.HandlerFunc {
 	return requireAuth
 }
 
-// TODO: This is duplicated code, see login.go
 func getUserByID(userID int) (types.User, error) {
 	var queriedUser types.User
 
