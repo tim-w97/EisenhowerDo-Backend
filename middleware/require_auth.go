@@ -17,7 +17,7 @@ func JWTAuth() gin.HandlerFunc {
 	return requireAuth
 }
 
-func getUserByID(userID int) (types.User, error) {
+func getUserByID(userID int) (foundUser types.User, error error, httpStatusCode int) {
 	var queriedUser types.User
 
 	row := db.Database.QueryRow(
@@ -29,15 +29,19 @@ func getUserByID(userID int) (types.User, error) {
 
 	if scanErr != nil {
 		if errors.Is(scanErr, sql.ErrNoRows) {
-			return types.User{}, errors.New("there is no user with this ID")
+			error = errors.New("there is no user with this ID")
+			httpStatusCode = http.StatusNotFound
+
+			return
 		}
 
-		// TODO: This is a internal server error, not Bad Request
-		log.Print("can't assign user row to user struct: ", scanErr)
-		return types.User{}, errors.New("can't assign user row to user struct")
+		error = errors.New("can't assign user row to user struct")
+		httpStatusCode = http.StatusInternalServerError
+
+		return
 	}
 
-	return queriedUser, nil
+	return queriedUser, nil, http.StatusOK
 }
 
 func getSecret(_ *jwt.Token) (interface{}, error) {
@@ -95,11 +99,11 @@ func requireAuth(context *gin.Context) {
 	subject := claims["sub"].(float64)
 	userID := int(subject)
 
-	user, searchError := getUserByID(userID)
+	user, searchError, httpStatusCode := getUserByID(userID)
 
 	if searchError != nil {
 		log.Print("Can't find user from JWT token: ", searchError)
-		context.AbortWithStatus(http.StatusUnauthorized)
+		context.AbortWithStatus(httpStatusCode)
 		return
 	}
 

@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func searchUser(user types.User) (types.User, error) {
+func searchUser(user types.User) (foundUser types.User, error error, httpStatusCode int) {
 	// TODO (maybe): Check if the username exists
 
 	var queriedUser types.User
@@ -28,15 +28,23 @@ func searchUser(user types.User) (types.User, error) {
 
 	if scanErr != nil {
 		if errors.Is(scanErr, sql.ErrNoRows) {
-			return user, errors.New("incorrect username of password")
+			foundUser = user
+			error = errors.New("incorrect username or password")
+			httpStatusCode = http.StatusNotFound
+
+			return
 		}
 
-		// TODO: This is a internal server error, not Bad Request
 		log.Print("can't assign user row to user struct: ", scanErr)
-		return user, errors.New("can't assign user row to user struct")
+
+		foundUser = user
+		error = errors.New("can't assign user row to user struct")
+		httpStatusCode = http.StatusInternalServerError
+
+		return
 	}
 
-	return queriedUser, nil
+	return queriedUser, nil, http.StatusOK
 }
 
 func Login(context *gin.Context) {
@@ -71,11 +79,11 @@ func Login(context *gin.Context) {
 	}
 
 	// search user in database and return it if found
-	user, searchError := searchUser(requestedUser)
+	user, searchError, httpStatus := searchUser(requestedUser)
 
 	if searchError != nil {
 		context.IndentedJSON(
-			http.StatusBadRequest,
+			httpStatus,
 			gin.H{"error": searchError.Error()},
 		)
 
