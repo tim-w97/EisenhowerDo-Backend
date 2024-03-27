@@ -45,9 +45,7 @@ func getUserByID(userID int) (foundUser types.User, error error, httpStatusCode 
 }
 
 func getSecret(_ *jwt.Token) (interface{}, error) {
-	// I could use the token here to check if the used algorithm is the one I expect,
-	// but I skip it for simplicity now
-
+	// I could use the token here to check if the used algorithm is the one I expect
 	secret := os.Getenv("SECRET")
 	return []byte(secret), nil
 }
