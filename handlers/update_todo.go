@@ -91,7 +91,7 @@ func UpdateTodo(context *gin.Context) {
 	if affectedRows == 0 {
 		context.IndentedJSON(
 			http.StatusNotFound,
-			gin.H{"message": fmt.Sprintf("no update happened, there is no todo with id %d", affectedRows)},
+			gin.H{"message": fmt.Sprintf("there is no todo with id %d, no update happened", id)},
 		)
 
 		return
