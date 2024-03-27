@@ -25,6 +25,8 @@ func InitRoutesAndRun() {
 		authorized.GET("/todos/:id", handlers.GetTodoByID)
 
 		authorized.POST("/todos", handlers.AddTodo)
+
+		authorized.DELETE("/todos/:id", handlers.DeleteTodo)
 	}
 
 	port := os.Getenv("PORT")
