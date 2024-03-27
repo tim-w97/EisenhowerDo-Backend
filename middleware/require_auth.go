@@ -91,9 +91,10 @@ func requireAuth(context *gin.Context) {
 		return
 	}
 
-	// TODO: Why do I get this ID as float64? Find out!
-	// Get the users ID from the token and search the corresponding user
-	userID := int(claims["sub"].(float64))
+	// Get the user id from the tokens subject and search the corresponding user
+	// JSON package parses numbers as float64, so we need to convert the subject back to int
+	subject := claims["sub"].(float64)
+	userID := int(subject)
 
 	user, searchError := getUserByID(userID)
 
