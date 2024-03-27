@@ -48,6 +48,8 @@ func searchUser(user types.User) (foundUser types.User, error error, httpStatusC
 }
 
 func Login(context *gin.Context) {
+	// TODO: hash passwords server-side!
+
 	var requestedUser types.User
 
 	// convert received json to a user

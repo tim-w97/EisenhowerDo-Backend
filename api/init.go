@@ -10,23 +10,28 @@ import (
 )
 
 func InitRoutesAndRun() {
-	// Set up router and routes
+	// Set up router
 	router := gin.Default()
 
-	// routes for registration and login
+	// Routes for Registration and Login
+	router.POST("/register", handlers.Register)
 	router.POST("/login", handlers.Login)
 
 	authorized := router.Group("/")
 
+	// Routes secured with JSON Web Token
 	authorized.Use(middleware.JWTAuth())
 	{
-		// routes secured with JSON Web Token
 		authorized.GET("/todos", handlers.GetTodos)
 		authorized.GET("/todos/:id", handlers.GetTodoByID)
 
+		// TODO: Use middleware for /todos/:id - for repetitive tasks like checking if the id is present and so on
 		authorized.POST("/todos", handlers.AddTodo)
+		authorized.POST("/todos/:id/share", handlers.ShareTodo)
 
 		authorized.PUT("/todos/:id", handlers.UpdateTodo)
+		authorized.PUT("/todos/:id/position", handlers.ChangeTodoPosition)
+		authorized.PUT("/todos/:id/status", handlers.SetTodoStatus)
 
 		authorized.DELETE("/todos/:id", handlers.DeleteTodo)
 	}

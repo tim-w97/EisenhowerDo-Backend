@@ -100,7 +100,7 @@ func requireAuth(context *gin.Context) {
 	user, searchError, httpStatusCode := getUserByID(userID)
 
 	if searchError != nil {
-		log.Print("Can't find user from JWT token: ", searchError)
+		log.Print("Can't find user from JWT token: ", searchError.Error())
 		context.AbortWithStatus(httpStatusCode)
 		return
 	}
