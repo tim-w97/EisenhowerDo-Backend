@@ -26,6 +26,8 @@ func InitRoutesAndRun() {
 
 		authorized.POST("/todos", handlers.AddTodo)
 
+		authorized.PUT("/todos/:id", handlers.UpdateTodo)
+
 		authorized.DELETE("/todos/:id", handlers.DeleteTodo)
 	}
 

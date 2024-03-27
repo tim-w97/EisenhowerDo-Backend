@@ -45,7 +45,7 @@ func DeleteTodo(context *gin.Context) {
 	affectedRows, affectedRowsErr := result.RowsAffected()
 
 	if affectedRowsErr != nil {
-		log.Print("Can't get number affected rows: ", affectedRowsErr)
+		log.Print("Can't get number of deleted rows: ", affectedRowsErr)
 		context.AbortWithStatus(http.StatusInternalServerError)
 		return
 	}
