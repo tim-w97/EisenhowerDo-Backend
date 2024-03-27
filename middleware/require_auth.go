@@ -1,10 +1,11 @@
 package middleware
 
 import (
+	"database/sql"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/tim-w97/my-awesome-Todo-API/data"
+	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
 	"log"
 	"net/http"
@@ -17,14 +18,27 @@ func JWTAuth() gin.HandlerFunc {
 }
 
 // TODO: This is duplicated code, see login.go
-func getUser(username string) (types.User, error) {
-	for _, dummyUser := range data.DummyUsers {
-		if dummyUser.Username == username {
-			return dummyUser, nil
+func getUserByID(userID int) (types.User, error) {
+	var queriedUser types.User
+
+	row := db.Database.QueryRow(
+		"SELECT * FROM user WHERE id = ?",
+		userID,
+	)
+
+	scanErr := row.Scan(&queriedUser.ID, &queriedUser.Username, &queriedUser.Password)
+
+	if scanErr != nil {
+		if errors.Is(scanErr, sql.ErrNoRows) {
+			return types.User{}, errors.New("there is no user with this ID")
 		}
+
+		// TODO: This is a internal server error, not Bad Request
+		log.Print("can't assign user row to user struct: ", scanErr)
+		return types.User{}, errors.New("can't assign user row to user struct")
 	}
 
-	return types.User{}, errors.New("this user doesn't exist")
+	return queriedUser, nil
 }
 
 func getSecret(_ *jwt.Token) (interface{}, error) {
@@ -77,10 +91,11 @@ func requireAuth(context *gin.Context) {
 		return
 	}
 
-	// Get the username from the token and search the corresponding user
-	username := claims["sub"].(string)
+	// TODO: Why do I get this ID as float64? Find out!
+	// Get the users ID from the token and search the corresponding user
+	userID := int(claims["sub"].(float64))
 
-	user, searchError := getUser(username)
+	user, searchError := getUserByID(userID)
 
 	if searchError != nil {
 		log.Print("Can't find user from JWT token: ", searchError)

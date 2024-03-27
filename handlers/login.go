@@ -1,23 +1,42 @@
 package handlers
 
 import (
+	"database/sql"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
+	"log"
 	"net/http"
 	"os"
 	"time"
 )
 
 func searchUser(user types.User) (types.User, error) {
-	for _, dummyUser := range data.DummyUsers {
-		if dummyUser.Username == user.Username {
-			return dummyUser, nil
+	// TODO (maybe): Check if the username exists
+
+	var queriedUser types.User
+
+	row := db.Database.QueryRow(
+		"SELECT * FROM user WHERE username = ? AND password = ?",
+		user.Username,
+		user.Password,
+	)
+
+	scanErr := row.Scan(&queriedUser.ID, &queriedUser.Username, &queriedUser.Password)
+
+	if scanErr != nil {
+		if errors.Is(scanErr, sql.ErrNoRows) {
+			return user, errors.New("incorrect username of password")
 		}
+
+		// TODO: This is a internal server error, not Bad Request
+		log.Print("can't assign user row to user struct: ", scanErr)
+		return user, errors.New("can't assign user row to user struct")
 	}
 
-	return user, errors.New("this user doesn't exist")
+	return queriedUser, nil
 }
 
 func Login(context *gin.Context) {
@@ -45,20 +64,10 @@ func Login(context *gin.Context) {
 		return
 	}
 
-	// TODO: Use password hashes
-	if user.Password != requestedUser.Password {
-		context.IndentedJSON(
-			http.StatusBadRequest,
-			gin.H{"error": "Your password is incorrect"},
-		)
-
-		return
-	}
-
 	// Generate the JSON Web Token and add the username to the claims
 	// The token expires after 1 hour
 	claims := jwt.MapClaims{
-		"sub": user.Username,
+		"sub": user.ID,
 		"exp": time.Now().Add(time.Hour).Unix(),
 	}
 
@@ -76,7 +85,7 @@ func Login(context *gin.Context) {
 		return
 	}
 
-	// Set the json web token as cookie with a max age of 1 hour
+	// Save the json web token as a http only cookie with a max age of 1 hour
 	context.SetCookie(
 		"Authorization",
 		tokenString,
@@ -87,6 +96,7 @@ func Login(context *gin.Context) {
 		true,
 	)
 
+	// TODO: add expire time
 	context.IndentedJSON(
 		http.StatusOK,
 		gin.H{"jwt": tokenString},
