@@ -52,6 +52,24 @@ func Login(context *gin.Context) {
 		return
 	}
 
+	if len(requestedUser.Username) == 0 {
+		context.IndentedJSON(
+			http.StatusBadRequest,
+			gin.H{"error": "please provide an username"},
+		)
+
+		return
+	}
+
+	if len(requestedUser.Password) == 0 {
+		context.IndentedJSON(
+			http.StatusBadRequest,
+			gin.H{"error": "please provide a password"},
+		)
+
+		return
+	}
+
 	// search user in database and return it if found
 	user, searchError := searchUser(requestedUser)
 
