@@ -9,6 +9,8 @@ import (
 )
 
 func GetTodos(context *gin.Context) {
+	// TODO: User should only get his todos
+
 	// create an empty slice of todos
 	todos := make([]types.Todo, 0)
 

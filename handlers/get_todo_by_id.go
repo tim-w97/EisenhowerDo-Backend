@@ -12,6 +12,8 @@ import (
 )
 
 func GetTodoByID(context *gin.Context) {
+	// TODO: User should only get his todos
+
 	var todo types.Todo
 
 	idString := context.Param("id")
