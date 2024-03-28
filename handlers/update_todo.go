@@ -24,6 +24,7 @@ func UpdateTodo(context *gin.Context) {
 	}
 
 	updatedTodo.ID = context.GetInt("todoID")
+	updatedTodo.UserID = context.GetInt("userID")
 
 	if len(updatedTodo.Title) == 0 {
 		context.IndentedJSON(
@@ -50,7 +51,7 @@ func UpdateTodo(context *gin.Context) {
 		updatedTodo.Text,
 		updatedTodo.IsCompleted,
 		updatedTodo.ID,
-		context.GetInt("userID"),
+		updatedTodo.UserID,
 	)
 
 	if updateErr != nil {
@@ -70,7 +71,7 @@ func UpdateTodo(context *gin.Context) {
 	if affectedRows == 0 {
 		context.IndentedJSON(
 			http.StatusNotFound,
-			gin.H{"message": "no update happened"},
+			gin.H{"message": "there is no todo associated with this id or you aren't the creator of this todo"},
 		)
 
 		return
