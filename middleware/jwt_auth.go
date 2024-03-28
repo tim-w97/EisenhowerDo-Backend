@@ -101,7 +101,7 @@ func JWTAuth(context *gin.Context) {
 		return
 	}
 
-	context.Set("user", user)
+	context.Set("userID", user.ID)
 
 	// Continue with the request if everything goes well
 	context.Next()

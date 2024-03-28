@@ -41,9 +41,10 @@ func AddTodo(context *gin.Context) {
 	}
 
 	result, insertErr := db.Database.Exec(
-		"INSERT INTO todo (title, text) VALUES (?, ?)",
+		"INSERT INTO todo (title, text, userID) VALUES (?, ?, ?)",
 		newTodo.Title,
 		newTodo.Text,
+		newTodo.UserID,
 	)
 
 	if insertErr != nil {

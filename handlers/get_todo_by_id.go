@@ -8,54 +8,17 @@ import (
 	"github.com/tim-w97/my-awesome-Todo-API/types"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 func GetTodoByID(context *gin.Context) {
-	// TODO: User should only get his todos
-
 	var todo types.Todo
 
-	idString := context.Param("id")
-
-	if idString == "" {
-		context.IndentedJSON(
-			http.StatusBadRequest,
-			gin.H{"message": "please send a todo ID"},
-		)
-
-		return
-	}
-
-	id, convertErr := strconv.Atoi(idString)
-
-	if convertErr != nil {
-		context.IndentedJSON(
-			http.StatusBadRequest,
-			gin.H{"message": "please send a numeric todo ID (examples: 1, 2, 3, 42)"},
-		)
-
-		return
-	}
-
-	// TODO: duplicated code, use a middleware or a helper function
-	user, userExists := context.Get("user")
-
-	if !userExists {
-		context.IndentedJSON(
-			http.StatusInternalServerError,
-			gin.H{"message": "got no user to query todos"},
-		)
-
-		context.Abort()
-		return
-	}
-
-	userID := user.(types.User).ID
+	userID := context.GetInt("userID")
+	todoID := context.GetInt("todoID")
 
 	row := db.Database.QueryRow(
 		"SELECT * FROM todo WHERE id = ? AND userID = ?",
-		id,
+		todoID,
 		userID,
 	)
 

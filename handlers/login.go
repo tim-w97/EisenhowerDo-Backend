@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-func getPaswordHash(password string) (hashString string) {
+func getPasswordHash(password string) (hashString string) {
 	hash := crypto.SHA512.New()
 
 	hash.Write(
@@ -32,7 +32,7 @@ func getPaswordHash(password string) (hashString string) {
 func searchUser(user types.User) (foundUser types.User, error error, httpStatusCode int) {
 	var queriedUser types.User
 
-	passwordHash := getPaswordHash(user.Password)
+	passwordHash := getPasswordHash(user.Password)
 
 	row := db.Database.QueryRow(
 		"SELECT * FROM user WHERE username = ? AND password = ?",
@@ -64,8 +64,6 @@ func searchUser(user types.User) (foundUser types.User, error error, httpStatusC
 }
 
 func Login(context *gin.Context) {
-	// TODO: hash passwords server-side!
-
 	var requestedUser types.User
 
 	// convert received json to a user
