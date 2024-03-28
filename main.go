@@ -18,5 +18,5 @@ func main() {
 	db.ConnectToDatabase()
 
 	// Let's run this thing!
-	api.InitRoutesAndRun()
+	api.InitEndpointsAndRun()
 }

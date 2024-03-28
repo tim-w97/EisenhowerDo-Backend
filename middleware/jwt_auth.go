@@ -13,10 +13,6 @@ import (
 	"time"
 )
 
-func JWTAuth() gin.HandlerFunc {
-	return requireAuth
-}
-
 func getUserByID(userID int) (foundUser types.User, error error, httpStatusCode int) {
 	var queriedUser types.User
 
@@ -50,7 +46,7 @@ func getSecret(_ *jwt.Token) (interface{}, error) {
 	return []byte(secret), nil
 }
 
-func requireAuth(context *gin.Context) {
+func JWTAuth(context *gin.Context) {
 	tokenString, cookieError := context.Cookie("Authorization")
 
 	if cookieError != nil {
