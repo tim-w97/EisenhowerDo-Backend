@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
@@ -44,11 +43,14 @@ func UpdateTodo(context *gin.Context) {
 		return
 	}
 
+	// TODO: Ensure if all three values can be updated
 	result, updateErr := db.Database.Exec(
-		"UPDATE todo SET title = ?, text = ? WHERE id = ?",
+		"UPDATE todo SET title = ?, text = ?, isCompleted = ? WHERE id = ? AND userID = ?",
 		updatedTodo.Title,
 		updatedTodo.Text,
+		updatedTodo.IsCompleted,
 		updatedTodo.ID,
+		context.GetInt("userID"),
 	)
 
 	if updateErr != nil {
@@ -68,10 +70,7 @@ func UpdateTodo(context *gin.Context) {
 	if affectedRows == 0 {
 		context.IndentedJSON(
 			http.StatusNotFound,
-			gin.H{"message": fmt.Sprintf(
-				"there is no todo with id %d, no update happened",
-				updatedTodo.ID,
-			)},
+			gin.H{"message": "no update happened"},
 		)
 
 		return
