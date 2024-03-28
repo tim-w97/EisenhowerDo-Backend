@@ -38,7 +38,26 @@ func GetTodoByID(context *gin.Context) {
 		return
 	}
 
-	row := db.Database.QueryRow("SELECT * FROM todo WHERE id = ?", id)
+	// TODO: duplicated code, use a middleware or a helper function
+	user, userExists := context.Get("user")
+
+	if !userExists {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "got no user to query todos"},
+		)
+
+		context.Abort()
+		return
+	}
+
+	userID := user.(types.User).ID
+
+	row := db.Database.QueryRow(
+		"SELECT * FROM todo WHERE id = ? AND userID = ?",
+		id,
+		userID,
+	)
 
 	scanErr := row.Scan(&todo.ID, &todo.Title, &todo.Text)
 

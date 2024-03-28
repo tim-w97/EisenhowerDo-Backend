@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/tim-w97/my-awesome-Todo-API/db"
+	"github.com/tim-w97/my-awesome-Todo-API/types"
 	"log"
 	"net/http"
 	"strconv"
@@ -34,7 +35,26 @@ func DeleteTodo(context *gin.Context) {
 		return
 	}
 
-	result, deleteErr := db.Database.Exec("DELETE FROM todo WHERE id = ?", id)
+	// TODO: duplicated code, use a middleware or a helper function
+	user, userExists := context.Get("user")
+
+	if !userExists {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "got no user to query todos"},
+		)
+
+		context.Abort()
+		return
+	}
+
+	userID := user.(types.User).ID
+
+	result, deleteErr := db.Database.Exec(
+		"DELETE FROM todo WHERE id = ? AND userID = ?",
+		id,
+		userID,
+	)
 
 	if deleteErr != nil {
 		log.Print("Can't delete todo: ", deleteErr)
