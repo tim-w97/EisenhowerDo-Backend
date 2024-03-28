@@ -14,7 +14,24 @@ func GetTodos(context *gin.Context) {
 	// create an empty slice of todos
 	todos := make([]types.Todo, 0)
 
-	rows, queryErr := db.Database.Query("SELECT * FROM todo")
+	user, userExists := context.Get("user")
+
+	if !userExists {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "got no user to query todos"},
+		)
+
+		context.Abort()
+		return
+	}
+
+	userID := user.(types.User).ID
+
+	rows, queryErr := db.Database.Query(
+		"SELECT * FROM todo WHERE userID = ?",
+		userID,
+	)
 
 	if queryErr != nil {
 		log.Print("Can't query todos from database: ", queryErr)
