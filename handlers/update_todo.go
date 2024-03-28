@@ -7,35 +7,12 @@ import (
 	"github.com/tim-w97/my-awesome-Todo-API/types"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 func UpdateTodo(context *gin.Context) {
 	var updatedTodo types.Todo
 
 	// TODO: only update given values
-
-	idString := context.Param("id")
-
-	if idString == "" {
-		context.IndentedJSON(
-			http.StatusBadRequest,
-			gin.H{"message": "please send a todo ID"},
-		)
-
-		return
-	}
-
-	id, convertErr := strconv.Atoi(idString)
-
-	if convertErr != nil {
-		context.IndentedJSON(
-			http.StatusBadRequest,
-			gin.H{"message": "please send a numeric todo ID (examples: 1, 2, 3, 42)"},
-		)
-
-		return
-	}
 
 	if bindErr := context.BindJSON(&updatedTodo); bindErr != nil {
 		context.IndentedJSON(
@@ -47,7 +24,7 @@ func UpdateTodo(context *gin.Context) {
 		return
 	}
 
-	updatedTodo.ID = id
+	updatedTodo.ID = context.GetInt("todoID")
 
 	if len(updatedTodo.Title) == 0 {
 		context.IndentedJSON(
@@ -91,7 +68,10 @@ func UpdateTodo(context *gin.Context) {
 	if affectedRows == 0 {
 		context.IndentedJSON(
 			http.StatusNotFound,
-			gin.H{"message": fmt.Sprintf("there is no todo with id %d, no update happened", id)},
+			gin.H{"message": fmt.Sprintf(
+				"there is no todo with id %d, no update happened",
+				updatedTodo.ID,
+			)},
 		)
 
 		return

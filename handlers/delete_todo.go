@@ -7,34 +7,9 @@ import (
 	"github.com/tim-w97/my-awesome-Todo-API/types"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 func DeleteTodo(context *gin.Context) {
-	// TODO: User should only delete his todos, not others!
-
-	idString := context.Param("id")
-
-	if idString == "" {
-		context.IndentedJSON(
-			http.StatusBadRequest,
-			gin.H{"message": "please send a todo ID"},
-		)
-
-		return
-	}
-
-	id, convertErr := strconv.Atoi(idString)
-
-	if convertErr != nil {
-		context.IndentedJSON(
-			http.StatusBadRequest,
-			gin.H{"message": "please send a numeric todo ID (examples: 1, 2, 3, 42)"},
-		)
-
-		return
-	}
-
 	// TODO: duplicated code, use a middleware or a helper function
 	user, userExists := context.Get("user")
 
@@ -50,9 +25,11 @@ func DeleteTodo(context *gin.Context) {
 
 	userID := user.(types.User).ID
 
+	todoID := context.GetInt("todoID")
+
 	result, deleteErr := db.Database.Exec(
 		"DELETE FROM todo WHERE id = ? AND userID = ?",
-		id,
+		todoID,
 		userID,
 	)
 
@@ -87,6 +64,6 @@ func DeleteTodo(context *gin.Context) {
 
 	context.IndentedJSON(
 		http.StatusOK,
-		gin.H{"message": fmt.Sprintf("todo with id %d deleted", id)},
+		gin.H{"message": fmt.Sprintf("todo with id %d deleted", todoID)},
 	)
 }
