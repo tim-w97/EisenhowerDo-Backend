@@ -30,8 +30,6 @@ func getPaswordHash(password string) (hashString string) {
 }
 
 func searchUser(user types.User) (foundUser types.User, error error, httpStatusCode int) {
-	// TODO: Check if the username exists
-
 	var queriedUser types.User
 
 	passwordHash := getPaswordHash(user.Password)
