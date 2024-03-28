@@ -30,7 +30,7 @@ func initEndpoints(router *gin.Engine) {
 	router.GET(
 		"/todos/:id",
 		middleware.JWTAuth,
-		middleware.TodoIDExists,
+		middleware.ParseTodoID,
 		handlers.GetTodoByID,
 	)
 
@@ -45,7 +45,7 @@ func initEndpoints(router *gin.Engine) {
 	router.POST(
 		"/todos/:id/share",
 		middleware.JWTAuth,
-		middleware.TodoIDExists,
+		middleware.ParseTodoID,
 		handlers.ShareTodo,
 	)
 
@@ -54,21 +54,21 @@ func initEndpoints(router *gin.Engine) {
 	router.PUT(
 		"/todos/:id",
 		middleware.JWTAuth,
-		middleware.TodoIDExists,
+		middleware.ParseTodoID,
 		handlers.UpdateTodo,
 	)
 
 	router.PUT(
 		"/todos/:id/position",
 		middleware.JWTAuth,
-		middleware.TodoIDExists,
+		middleware.ParseTodoID,
 		handlers.ChangeTodoPosition,
 	)
 
 	router.PUT(
 		"/todos/:id/status",
 		middleware.JWTAuth,
-		middleware.TodoIDExists,
+		middleware.ParseTodoID,
 		handlers.SetTodoStatus,
 	)
 
@@ -77,7 +77,7 @@ func initEndpoints(router *gin.Engine) {
 	router.DELETE(
 		"/todos/:id",
 		middleware.JWTAuth,
-		middleware.TodoIDExists,
+		middleware.ParseTodoID,
 		handlers.DeleteTodo,
 	)
 }

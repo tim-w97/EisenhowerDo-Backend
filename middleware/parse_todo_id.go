@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func TodoIDExists(context *gin.Context) {
+func ParseTodoID(context *gin.Context) {
 	idString := context.Param("id")
 
 	if idString == "" {
@@ -24,7 +24,7 @@ func TodoIDExists(context *gin.Context) {
 	if convertErr != nil {
 		context.IndentedJSON(
 			http.StatusBadRequest,
-			gin.H{"message": "please send a numeric todo ID"},
+			gin.H{"message": "please send a valid todo ID in integer format"},
 		)
 
 		context.Abort()
