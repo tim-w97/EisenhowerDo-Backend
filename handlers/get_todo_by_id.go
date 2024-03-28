@@ -22,7 +22,13 @@ func GetTodoByID(context *gin.Context) {
 		userID,
 	)
 
-	scanErr := row.Scan(&todo.ID, &todo.Title, &todo.Text)
+	scanErr := row.Scan(
+		&todo.ID,
+		&todo.Title,
+		&todo.Text,
+		&todo.UserID,
+		&todo.IsCompleted,
+	)
 
 	if scanErr != nil {
 		if errors.Is(scanErr, sql.ErrNoRows) {
