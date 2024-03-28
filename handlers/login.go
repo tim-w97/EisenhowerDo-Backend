@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"crypto"
 	"database/sql"
+	"encoding/hex"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -13,15 +15,31 @@ import (
 	"time"
 )
 
+func getPaswordHash(password string) (hashString string) {
+	hash := crypto.SHA512.New()
+
+	hash.Write(
+		[]byte(password),
+	)
+
+	hashString = hex.EncodeToString(
+		hash.Sum(nil),
+	)
+
+	return
+}
+
 func searchUser(user types.User) (foundUser types.User, error error, httpStatusCode int) {
-	// TODO (maybe): Check if the username exists
+	// TODO: Check if the username exists
 
 	var queriedUser types.User
+
+	passwordHash := getPaswordHash(user.Password)
 
 	row := db.Database.QueryRow(
 		"SELECT * FROM user WHERE username = ? AND password = ?",
 		user.Username,
-		user.Password,
+		passwordHash,
 	)
 
 	scanErr := row.Scan(&queriedUser.ID, &queriedUser.Username, &queriedUser.Password)
