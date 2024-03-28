@@ -40,8 +40,15 @@ func GetTodos(context *gin.Context) {
 	for rows.Next() {
 		var todo types.Todo
 
-		if scanErr := rows.Scan(&todo.ID, &todo.Title, &todo.Text); scanErr != nil {
+		if scanErr := rows.Scan(
+			&todo.ID,
+			&todo.Title,
+			&todo.Text,
+			&todo.UserID,
+			&todo.IsCompleted,
+		); scanErr != nil {
 			log.Print("Can't assign todo row to todo struct: ", scanErr)
+			context.AbortWithStatus(http.StatusInternalServerError)
 			return
 		}
 
