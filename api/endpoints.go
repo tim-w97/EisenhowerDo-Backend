@@ -30,6 +30,7 @@ func initEndpoints(router *gin.Engine) {
 	router.GET(
 		"/todos/:id",
 		middleware.JWTAuth,
+		middleware.TodoIDExists,
 		handlers.GetTodoByID,
 	)
 
