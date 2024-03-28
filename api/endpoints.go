@@ -36,7 +36,6 @@ func initEndpoints(router *gin.Engine) {
 
 	// Add and share Todo items
 
-	// TODO: Use middleware for /todos/:id - for repetitive tasks like checking if the id is present and so on
 	router.POST(
 		"/todos",
 		middleware.JWTAuth,
