@@ -18,14 +18,14 @@ func initAuthorizedEndpoints(router *gin.Engine) {
 	// Get all Todos of a user
 	authorized.GET("/", handlers.GetTodos)
 
+	// Add a new Todo
+	authorized.POST("/", handlers.AddTodo)
+
 	// all routes with a Todo ID parameter require parsing of the todo ID
 	withTodoID := authorized.Group("/:id", middleware.ParseTodoID)
 
 	// Get a Todo by ID
 	withTodoID.GET("/", handlers.GetTodoByID)
-
-	// Add a new Todo
-	authorized.POST("/", handlers.AddTodo)
 
 	// Share a Todo with another user
 	withTodoID.POST("/share", handlers.ShareTodo)
