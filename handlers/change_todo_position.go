@@ -125,7 +125,7 @@ func ChangeTodoPosition(context *gin.Context) {
 	if currentPosition == desiredPosition {
 		context.IndentedJSON(
 			http.StatusOK,
-			gin.H{"error": "this todo is already at the requested position"},
+			gin.H{"message": "this todo is already at the desired position"},
 		)
 
 		return
@@ -143,6 +143,6 @@ func ChangeTodoPosition(context *gin.Context) {
 
 	context.IndentedJSON(
 		http.StatusOK,
-		gin.H{"message": "successfully moved todo at desired position"},
+		gin.H{"message": "successfully moved todo to desired position"},
 	)
 }
