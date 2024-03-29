@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func getCurrentPosition(context *gin.Context) (int, error) {
+func getPositionFromTodo(context *gin.Context) (int, error) {
 	var currentPosition int
 
 	row := db.Database.QueryRow(
@@ -38,7 +38,7 @@ func getCurrentPosition(context *gin.Context) (int, error) {
 	return currentPosition, nil
 }
 
-func getDesiredPosition(context *gin.Context) (int, error) {
+func readDesiredPositionFromBody(context *gin.Context) (int, error) {
 	var desiredPosition types.TodoPosition
 
 	if bindErr := context.BindJSON(&desiredPosition); bindErr != nil {
@@ -108,14 +108,14 @@ func updatePosition(desiredPosition int, context *gin.Context) error {
 }
 
 func ChangeTodoPosition(context *gin.Context) {
-	currentPosition, scanErr := getCurrentPosition(context)
+	currentPosition, scanErr := getPositionFromTodo(context)
 
 	if scanErr != nil {
 		log.Print(scanErr)
 		return
 	}
 
-	desiredPosition, bindErr := getDesiredPosition(context)
+	desiredPosition, bindErr := readDesiredPositionFromBody(context)
 
 	if bindErr != nil {
 		log.Print(bindErr)
