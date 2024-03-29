@@ -1,38 +1,23 @@
 package handlers
 
 import (
-	"crypto"
 	"database/sql"
-	"encoding/hex"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
+	"github.com/tim-w97/my-awesome-Todo-API/util"
 	"log"
 	"net/http"
 	"os"
 	"time"
 )
 
-func getPasswordHash(password string) (hashString string) {
-	hash := crypto.SHA512.New()
-
-	hash.Write(
-		[]byte(password),
-	)
-
-	hashString = hex.EncodeToString(
-		hash.Sum(nil),
-	)
-
-	return
-}
-
 func searchUser(user types.User) (foundUser types.User, error error, httpStatusCode int) {
 	var queriedUser types.User
 
-	passwordHash := getPasswordHash(user.Password)
+	passwordHash := util.GetPasswordHash(user.Password)
 
 	row := db.Database.QueryRow(
 		"SELECT * FROM user WHERE username = ? AND password = ?",
