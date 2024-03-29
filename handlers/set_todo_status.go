@@ -23,6 +23,7 @@ func SetTodoStatus(context *gin.Context) {
 
 	result, err := db.Database.Exec(
 		"UPDATE todo SET isCompleted = ? WHERE id = ? AND userID = ?",
+		todoStatus.IsCompleted,
 		context.GetInt("todoID"),
 		context.GetInt("userID"),
 	)
