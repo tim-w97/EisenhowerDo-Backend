@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func getUserByID(userID int) (foundUser types.User, error error, httpStatusCode int) {
+func getUserByID(userID int, context *gin.Context) (foundUser types.User, error error) {
 	var queriedUser types.User
 
 	row := db.Database.QueryRow(
@@ -25,19 +25,22 @@ func getUserByID(userID int) (foundUser types.User, error error, httpStatusCode 
 
 	if scanErr != nil {
 		if errors.Is(scanErr, sql.ErrNoRows) {
-			error = errors.New("there is no user with this ID")
-			httpStatusCode = http.StatusNotFound
-
-			return
+			context.IndentedJSON(
+				http.StatusNotFound,
+				gin.H{"message": "there is no user with this ID"},
+			)
+		} else {
+			context.IndentedJSON(
+				http.StatusInternalServerError,
+				gin.H{"message": "can't assign user row to user struct"},
+			)
 		}
 
-		error = errors.New("can't assign user row to user struct")
-		httpStatusCode = http.StatusInternalServerError
-
+		error = scanErr
 		return
 	}
 
-	return queriedUser, nil, http.StatusOK
+	return queriedUser, nil
 }
 
 func getSecret(_ *jwt.Token) (interface{}, error) {
@@ -50,22 +53,36 @@ func JWTAuth(context *gin.Context) {
 	tokenString, cookieError := context.Cookie("Authorization")
 
 	if cookieError != nil {
-		log.Print("Can't get cookie with JWT token: ", cookieError)
-		context.AbortWithStatus(http.StatusUnauthorized)
+		context.IndentedJSON(
+			http.StatusUnauthorized,
+			gin.H{"message": "can't get token from cookie"},
+		)
+
+		log.Print(cookieError.Error())
+		context.Abort()
 		return
 	}
 
 	token, parseError := jwt.Parse(tokenString, getSecret)
 
 	if parseError != nil {
-		log.Print("Can't parse JWT token: ", parseError)
-		context.AbortWithStatus(http.StatusUnauthorized)
+		context.IndentedJSON(
+			http.StatusUnauthorized,
+			gin.H{"message": "can't parse token"},
+		)
+
+		log.Print(parseError.Error())
+		context.Abort()
 		return
 	}
 
 	if !token.Valid {
-		log.Print("JWT token is invalid")
-		context.AbortWithStatus(http.StatusUnauthorized)
+		context.IndentedJSON(
+			http.StatusUnauthorized,
+			gin.H{"message": "token is invalid"},
+		)
+
+		context.Abort()
 		return
 	}
 
@@ -73,18 +90,27 @@ func JWTAuth(context *gin.Context) {
 	claims, ok := token.Claims.(jwt.MapClaims)
 
 	if !ok {
-		log.Print("Can't get claims from JWT token")
-		context.AbortWithStatus(http.StatusUnauthorized)
+		context.IndentedJSON(
+			http.StatusUnauthorized,
+			gin.H{"message": "can't get claims from token"},
+		)
+
+		context.Abort()
 		return
 	}
 
+	// TODO: check if that works correctly!
 	// Check if the token is expired
 	currentTime := float64(time.Now().Unix())
 	tokenExpireTime := claims["exp"].(float64)
 
 	if currentTime > tokenExpireTime {
-		log.Print("JWT token is expired")
-		context.AbortWithStatus(http.StatusUnauthorized)
+		context.IndentedJSON(
+			http.StatusUnauthorized,
+			gin.H{"message": "token is expired"},
+		)
+
+		context.Abort()
 		return
 	}
 
@@ -93,11 +119,11 @@ func JWTAuth(context *gin.Context) {
 	subject := claims["sub"].(float64)
 	userID := int(subject)
 
-	user, searchError, httpStatusCode := getUserByID(userID)
+	user, searchError := getUserByID(userID, context)
 
 	if searchError != nil {
-		log.Print("Can't find user from JWT token: ", searchError.Error())
-		context.AbortWithStatus(httpStatusCode)
+		log.Print("Can't find user from token: ", searchError.Error())
+		context.Abort()
 		return
 	}
 
