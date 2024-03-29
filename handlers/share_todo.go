@@ -23,7 +23,7 @@ func ShareTodo(context *gin.Context) {
 
 	sharedTodo.TodoID = context.GetInt("todoID")
 
-	result, insertErr := db.Database.Exec(
+	_, insertErr := db.Database.Exec(
 		"INSERT INTO sharedTodo (todoID, otherUserID) VALUES (?, ?)",
 		sharedTodo.TodoID,
 		sharedTodo.OtherUserID,
@@ -36,27 +36,6 @@ func ShareTodo(context *gin.Context) {
 		)
 
 		log.Print(insertErr)
-		return
-	}
-
-	rowsAffected, err := result.RowsAffected()
-
-	if err != nil {
-		context.IndentedJSON(
-			http.StatusInternalServerError,
-			gin.H{"message": "can't count affected rows"},
-		)
-
-		log.Print(err)
-		return
-	}
-
-	if rowsAffected == 0 {
-		context.IndentedJSON(
-			http.StatusInternalServerError,
-			gin.H{"message": "updated no rows"},
-		)
-
 		return
 	}
 

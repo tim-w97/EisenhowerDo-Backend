@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func searchUser(user types.User) (foundUser types.User, error error, httpStatusCode int) {
+func searchUser(user types.User, context *gin.Context) (types.User, error) {
 	var queriedUser types.User
 
 	passwordHash := util.GetPasswordHash(user.Password)
@@ -25,27 +25,30 @@ func searchUser(user types.User) (foundUser types.User, error error, httpStatusC
 		passwordHash,
 	)
 
-	scanErr := row.Scan(&queriedUser.ID, &queriedUser.Username, &queriedUser.Password)
+	scanErr := row.Scan(
+		&queriedUser.ID,
+		&queriedUser.Username,
+		&queriedUser.Password,
+	)
 
-	if scanErr != nil {
-		if errors.Is(scanErr, sql.ErrNoRows) {
-			foundUser = user
-			error = errors.New("incorrect username or password")
-			httpStatusCode = http.StatusNotFound
-
-			return
-		}
-
-		log.Print("can't assign user row to user struct: ", scanErr)
-
-		foundUser = user
-		error = errors.New("can't assign user row to user struct")
-		httpStatusCode = http.StatusInternalServerError
-
-		return
+	if scanErr == nil {
+		return queriedUser, nil
 	}
 
-	return queriedUser, nil, http.StatusOK
+	if errors.Is(scanErr, sql.ErrNoRows) {
+		context.IndentedJSON(
+			http.StatusNotFound,
+			gin.H{"message": "incorrect username or password"},
+		)
+	}
+
+	context.IndentedJSON(
+		http.StatusInternalServerError,
+		gin.H{"message": "can't assign user row to user struct"},
+	)
+
+	log.Print(scanErr)
+	return user, scanErr
 }
 
 func Login(context *gin.Context) {
@@ -55,16 +58,17 @@ func Login(context *gin.Context) {
 	if err := context.BindJSON(&requestedUser); err != nil {
 		context.IndentedJSON(
 			http.StatusBadRequest,
-			gin.H{"error": "Can't convert body to user"},
+			gin.H{"message": "can't convert body to user"},
 		)
 
+		log.Print(err)
 		return
 	}
 
 	if len(requestedUser.Username) == 0 {
 		context.IndentedJSON(
 			http.StatusBadRequest,
-			gin.H{"error": "please provide an username"},
+			gin.H{"message": "please provide an username"},
 		)
 
 		return
@@ -73,21 +77,17 @@ func Login(context *gin.Context) {
 	if len(requestedUser.Password) == 0 {
 		context.IndentedJSON(
 			http.StatusBadRequest,
-			gin.H{"error": "please provide a password"},
+			gin.H{"message": "please provide a password"},
 		)
 
 		return
 	}
 
 	// search user in database and return it if found
-	user, searchError, httpStatus := searchUser(requestedUser)
+	user, searchError := searchUser(requestedUser, context)
 
 	if searchError != nil {
-		context.IndentedJSON(
-			httpStatus,
-			gin.H{"error": searchError.Error()},
-		)
-
+		log.Print(searchError)
 		return
 	}
 
@@ -106,9 +106,10 @@ func Login(context *gin.Context) {
 	if signError != nil {
 		context.IndentedJSON(
 			http.StatusBadRequest,
-			gin.H{"error": "Can't generate token"},
+			gin.H{"message": "can't generate token"},
 		)
 
+		log.Print(signError)
 		return
 	}
 

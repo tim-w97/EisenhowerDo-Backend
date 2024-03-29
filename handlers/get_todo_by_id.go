@@ -31,20 +31,24 @@ func GetTodoByID(context *gin.Context) {
 		&todo.IsCompleted,
 	)
 
-	if scanErr != nil {
-		if errors.Is(scanErr, sql.ErrNoRows) {
-			context.IndentedJSON(
-				http.StatusNotFound,
-				gin.H{"message": "Can't find a todo for this ID"},
-			)
-
-			return
-		}
-
-		log.Print("Can't assign todo row to todo struct: ", scanErr)
-		context.AbortWithStatus(http.StatusInternalServerError)
+	if scanErr == nil {
+		context.IndentedJSON(http.StatusOK, todo)
 		return
 	}
 
-	context.IndentedJSON(http.StatusOK, todo)
+	if errors.Is(scanErr, sql.ErrNoRows) {
+		context.IndentedJSON(
+			http.StatusNotFound,
+			gin.H{"message": "can't find a todo for this ID"},
+		)
+
+		return
+	}
+
+	context.IndentedJSON(
+		http.StatusInternalServerError,
+		gin.H{"message": "can't convert todo from database"},
+	)
+
+	log.Print(scanErr)
 }

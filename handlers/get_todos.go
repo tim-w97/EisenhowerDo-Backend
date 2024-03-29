@@ -20,8 +20,12 @@ func GetTodos(context *gin.Context) {
 	)
 
 	if queryErr != nil {
-		log.Print("Can't query todos from database: ", queryErr)
-		context.AbortWithStatus(http.StatusInternalServerError)
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't query todos from database"},
+		)
+
+		log.Print(queryErr)
 		return
 	}
 
@@ -36,8 +40,12 @@ func GetTodos(context *gin.Context) {
 			&todo.Position,
 			&todo.IsCompleted,
 		); scanErr != nil {
-			log.Print("Can't assign todo row to todo struct: ", scanErr)
-			context.AbortWithStatus(http.StatusInternalServerError)
+			context.IndentedJSON(
+				http.StatusInternalServerError,
+				gin.H{"message": "can't assign todo row to todo struct"},
+			)
+
+			log.Print(scanErr)
 			return
 		}
 
@@ -45,15 +53,23 @@ func GetTodos(context *gin.Context) {
 	}
 
 	if closeErr := rows.Close(); closeErr != nil {
-		log.Print("Can't close database todo rows: ", closeErr)
-		context.AbortWithStatus(http.StatusInternalServerError)
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't close database todo rows"},
+		)
+
+		log.Print(closeErr)
 		return
 	}
 
 	// Check for an error from the overall query
 	if rowsErr := rows.Err(); rowsErr != nil {
-		log.Print("The query for todo rows threw an error: ", rowsErr)
-		context.AbortWithStatus(http.StatusInternalServerError)
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "the query for todo rows threw an error"},
+		)
+
+		log.Print(rowsErr)
 		return
 	}
 

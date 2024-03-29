@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func searchUsername(username string) (usernameExists bool, error error) {
+func searchUsername(username string, context *gin.Context) (bool, error) {
 	var usernameCount int
 
 	row := db.Database.QueryRow(
@@ -18,13 +18,15 @@ func searchUsername(username string) (usernameExists bool, error error) {
 	)
 
 	if scanErr := row.Scan(&usernameCount); scanErr != nil {
-		error = scanErr
-		return
+		context.IndentedJSON(
+			http.StatusNotFound,
+			gin.H{"message": "can't assign user row to user struct"},
+		)
+
+		return false, scanErr
 	}
 
-	usernameExists = usernameCount > 0
-	error = nil
-	return
+	return usernameCount > 0, nil
 }
 
 func Register(context *gin.Context) {
@@ -34,25 +36,24 @@ func Register(context *gin.Context) {
 	if err := context.BindJSON(&userToRegister); err != nil {
 		context.IndentedJSON(
 			http.StatusBadRequest,
-			gin.H{"error": "Can't convert body to user"},
+			gin.H{"message": "can't convert body to user"},
 		)
 
+		log.Print(err)
 		return
 	}
 
-	usernameExists, usernameSearchErr := searchUsername(userToRegister.Username)
+	usernameIsTaken, err := searchUsername(
+		userToRegister.Username,
+		context,
+	)
 
-	if usernameSearchErr != nil {
-		context.IndentedJSON(
-			http.StatusInternalServerError,
-			gin.H{"message": "can't determine if username already exists"},
-		)
-
-		log.Print(usernameSearchErr)
+	if err != nil {
+		log.Print(err)
 		return
 	}
 
-	if usernameExists {
+	if usernameIsTaken {
 		context.IndentedJSON(
 			http.StatusConflict,
 			gin.H{"message": "this username is already taken"},
@@ -69,14 +70,13 @@ func Register(context *gin.Context) {
 		passwordHash,
 	)
 
-	// TODO: Ensure to handle all errors like this
 	if insertErr != nil {
 		context.IndentedJSON(
 			http.StatusInternalServerError,
 			gin.H{"message": "can't add new user to the database"},
 		)
 
-		log.Print("Can't insert user: ", insertErr)
+		log.Print(insertErr)
 		return
 	}
 

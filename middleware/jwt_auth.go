@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func getUserByID(userID int, context *gin.Context) (foundUser types.User, error error) {
+func getUserByID(userID int, context *gin.Context) (types.User, error) {
 	var queriedUser types.User
 
 	row := db.Database.QueryRow(
@@ -23,24 +23,23 @@ func getUserByID(userID int, context *gin.Context) (foundUser types.User, error 
 
 	scanErr := row.Scan(&queriedUser.ID, &queriedUser.Username, &queriedUser.Password)
 
-	if scanErr != nil {
-		if errors.Is(scanErr, sql.ErrNoRows) {
-			context.IndentedJSON(
-				http.StatusNotFound,
-				gin.H{"message": "there is no user with this ID"},
-			)
-		} else {
-			context.IndentedJSON(
-				http.StatusInternalServerError,
-				gin.H{"message": "can't assign user row to user struct"},
-			)
-		}
-
-		error = scanErr
-		return
+	if scanErr == nil {
+		return queriedUser, nil
 	}
 
-	return queriedUser, nil
+	if errors.Is(scanErr, sql.ErrNoRows) {
+		context.IndentedJSON(
+			http.StatusNotFound,
+			gin.H{"message": "there is no user with this ID"},
+		)
+	} else {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't assign user row to user struct"},
+		)
+	}
+
+	return types.User{}, scanErr
 }
 
 func getSecret(_ *jwt.Token) (interface{}, error) {
@@ -122,7 +121,8 @@ func JWTAuth(context *gin.Context) {
 	user, searchError := getUserByID(userID, context)
 
 	if searchError != nil {
-		log.Print("Can't find user from token: ", searchError.Error())
+		// TODO: check if I call .Error() everywhere
+		log.Print(searchError.Error())
 		context.Abort()
 		return
 	}

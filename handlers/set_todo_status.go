@@ -21,38 +21,20 @@ func SetTodoStatus(context *gin.Context) {
 		return
 	}
 
-	result, err := db.Database.Exec(
+	_, updateErr := db.Database.Exec(
 		"UPDATE todo SET isCompleted = ? WHERE id = ? AND userID = ?",
 		todoStatus.IsCompleted,
 		context.GetInt("todoID"),
 		context.GetInt("userID"),
 	)
 
-	if err != nil {
+	if updateErr != nil {
 		context.IndentedJSON(
 			http.StatusInternalServerError,
 			gin.H{"message": "insert failed, can't update status of todo"},
 		)
 
-		log.Print(err)
-		return
-	}
-
-	rowsAffected, err := result.RowsAffected()
-
-	if err != nil {
-		context.IndentedJSON(
-			http.StatusInternalServerError,
-			gin.H{"message": "can't count affected rows"},
-		)
-	}
-
-	if rowsAffected == 0 {
-		context.IndentedJSON(
-			http.StatusInternalServerError,
-			gin.H{"message": "updated no rows"},
-		)
-
+		log.Print(updateErr)
 		return
 	}
 
