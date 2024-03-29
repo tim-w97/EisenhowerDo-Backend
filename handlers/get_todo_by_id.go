@@ -24,9 +24,10 @@ func GetTodoByID(context *gin.Context) {
 
 	scanErr := row.Scan(
 		&todo.ID,
+		&todo.UserID,
 		&todo.Title,
 		&todo.Text,
-		&todo.UserID,
+		&todo.Position,
 		&todo.IsCompleted,
 	)
 

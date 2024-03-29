@@ -42,6 +42,7 @@ func AddTodo(context *gin.Context) {
 
 	newTodo.UserID = context.GetInt("userID")
 
+	// TODO: Add right position
 	// TODO: Add Todo categories
 	result, insertErr := db.Database.Exec(
 		"INSERT INTO todo (title, text, userID) VALUES (?, ?, ?)",

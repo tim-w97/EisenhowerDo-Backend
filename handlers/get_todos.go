@@ -30,9 +30,10 @@ func GetTodos(context *gin.Context) {
 
 		if scanErr := rows.Scan(
 			&todo.ID,
+			&todo.UserID,
 			&todo.Title,
 			&todo.Text,
-			&todo.UserID,
+			&todo.Position,
 			&todo.IsCompleted,
 		); scanErr != nil {
 			log.Print("Can't assign todo row to todo struct: ", scanErr)
