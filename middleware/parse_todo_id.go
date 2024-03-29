@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -27,6 +28,7 @@ func ParseTodoID(context *gin.Context) {
 			gin.H{"message": "please send a valid todo ID in integer format"},
 		)
 
+		log.Print(convertErr.Error())
 		context.Abort()
 		return
 	}
