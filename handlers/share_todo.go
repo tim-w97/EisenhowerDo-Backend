@@ -21,6 +21,8 @@ func ShareTodo(context *gin.Context) {
 		return
 	}
 
+	sharedTodo.TodoID = context.GetInt("todoID")
+
 	result, insertErr := db.Database.Exec(
 		"INSERT INTO sharedTodo (todoID, otherUserID) VALUES (?, ?)",
 		sharedTodo.TodoID,
