@@ -87,7 +87,7 @@ func shiftOtherTodos(currentPosition, desiredPosition int, context *gin.Context)
 	return nil
 }
 
-func changeTodoPosition(desiredPosition int, context *gin.Context) error {
+func updatePosition(desiredPosition int, context *gin.Context) error {
 	_, updateErr := db.Database.Exec(
 		"UPDATE todo SET position = ? WHERE id = ? AND userID = ?",
 		desiredPosition,
@@ -136,7 +136,7 @@ func ChangeTodoPosition(context *gin.Context) {
 		return
 	}
 
-	if err := changeTodoPosition(desiredPosition, context); err != nil {
+	if err := updatePosition(desiredPosition, context); err != nil {
 		log.Print(err)
 		return
 	}
