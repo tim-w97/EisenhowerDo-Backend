@@ -15,7 +15,7 @@ func AddTodo(context *gin.Context) {
 	if bindErr := context.BindJSON(&newTodo); bindErr != nil {
 		context.IndentedJSON(
 			http.StatusBadRequest,
-			gin.H{"error": "Can't convert body to Todo item"},
+			gin.H{"message": "can't read todo from body"},
 		)
 
 		log.Print(bindErr)
@@ -25,7 +25,7 @@ func AddTodo(context *gin.Context) {
 	if len(newTodo.Title) == 0 {
 		context.IndentedJSON(
 			http.StatusBadRequest,
-			gin.H{"error": "please add a title"},
+			gin.H{"message": "please add a title"},
 		)
 
 		return
@@ -34,7 +34,7 @@ func AddTodo(context *gin.Context) {
 	if len(newTodo.Text) == 0 {
 		context.IndentedJSON(
 			http.StatusBadRequest,
-			gin.H{"error": "please add a text"},
+			gin.H{"message": "please add a text"},
 		)
 
 		return
@@ -52,19 +52,28 @@ func AddTodo(context *gin.Context) {
 	)
 
 	if insertErr != nil {
-		log.Print("Can't insert todo: ", insertErr)
-		context.AbortWithStatus(http.StatusInternalServerError)
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't insert todo"},
+		)
+
+		log.Print(insertErr)
 		return
 	}
 
 	insertedID, idErr := result.LastInsertId()
 
 	if idErr != nil {
-		log.Print("Can't get id of the inserted row: ", insertErr)
-		context.AbortWithStatus(http.StatusInternalServerError)
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't get id of inserted todo"},
+		)
+
+		log.Print(idErr)
 		return
 	}
 
 	newTodo.ID = int(insertedID)
+
 	context.IndentedJSON(http.StatusCreated, newTodo)
 }
