@@ -63,7 +63,7 @@ func Register(context *gin.Context) {
 
 	passwordHash := util.GetPasswordHash(userToRegister.Password)
 
-	result, insertErr := db.Database.Exec(
+	_, insertErr := db.Database.Exec(
 		"INSERT INTO user (username, password) VALUES (?, ?)",
 		userToRegister.Username,
 		passwordHash,
@@ -79,20 +79,6 @@ func Register(context *gin.Context) {
 		log.Print("Can't insert user: ", insertErr)
 		return
 	}
-
-	insertedID, idErr := result.LastInsertId()
-
-	if idErr != nil {
-		context.IndentedJSON(
-			http.StatusInternalServerError,
-			gin.H{"message": "can't get id of created user"},
-		)
-
-		log.Print("Can't get id of the inserted row: ", insertErr)
-		return
-	}
-
-	userToRegister.ID = int(insertedID)
 
 	context.IndentedJSON(
 		http.StatusCreated,
