@@ -15,7 +15,7 @@ func GetTodos(context *gin.Context) {
 	userID := context.GetInt("userID")
 
 	rows, queryErr := db.Database.Query(
-		"SELECT * FROM todo WHERE userID = ?",
+		"SELECT * FROM todo WHERE userID = ? ORDER BY position",
 		userID,
 	)
 
