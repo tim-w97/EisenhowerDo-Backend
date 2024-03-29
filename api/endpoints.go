@@ -15,11 +15,11 @@ func initAuthorizedEndpoints(router *gin.Engine) {
 	// all routes beginning with /todos are secured with JSON Web Token Authorization
 	authorized := router.Group("/todos", middleware.JWTAuth)
 
-	// all routes with a Todo ID parameter require parsing of the todo ID
-	withTodoID := authorized.Group("/:id", middleware.ParseTodoID)
-
 	// Get all Todos of a user
 	authorized.GET("/", handlers.GetTodos)
+
+	// all routes with a Todo ID parameter require parsing of the todo ID
+	withTodoID := authorized.Group("/:id", middleware.ParseTodoID)
 
 	// Get a Todo by ID
 	withTodoID.GET("/", handlers.GetTodoByID)
