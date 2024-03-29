@@ -1,6 +1,5 @@
 DROP TABLE IF EXISTS todo;
 
--- TODO: Use FOREIGN KEY
 CREATE TABLE todo
 (
     id          INT auto_increment NOT NULL,
