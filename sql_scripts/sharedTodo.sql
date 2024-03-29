@@ -6,7 +6,9 @@ CREATE TABLE sharedTodo
     todoID      INT                NOT NULL,
     otherUserID INT                NOT NULL,
 
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (todoID) REFERENCES todo (id),
+    FOREIGN KEY (otherUserID) REFERENCES user (id)
 );
 
 INSERT INTO sharedTodo (todoID, otherUserID)
