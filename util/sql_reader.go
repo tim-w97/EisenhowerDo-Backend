@@ -7,7 +7,7 @@ import (
 
 func ReadSQLFile(filename string) (string, error) {
 	bytes, err := os.ReadFile(
-		fmt.Sprintf("sql/for_endpoints/%s", filename),
+		fmt.Sprintf("sql/endpoints/%s", filename),
 	)
 
 	if err != nil {
