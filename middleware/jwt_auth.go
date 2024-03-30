@@ -7,6 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
+	"github.com/tim-w97/my-awesome-Todo-API/util"
 	"log"
 	"net/http"
 	"os"
@@ -16,8 +17,20 @@ import (
 func getUserByID(userID int, context *gin.Context) (types.User, error) {
 	var queriedUser types.User
 
+	sqlString, err := util.ReadSQLFile("get_user_by_id.sql")
+
+	if err != nil {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't read SQL"},
+		)
+
+		log.Print(err)
+		return types.User{}, err
+	}
+
 	row := db.Database.QueryRow(
-		"SELECT * FROM user WHERE id = ?",
+		sqlString,
 		userID,
 	)
 
@@ -30,7 +43,7 @@ func getUserByID(userID int, context *gin.Context) (types.User, error) {
 	if errors.Is(scanErr, sql.ErrNoRows) {
 		context.IndentedJSON(
 			http.StatusNotFound,
-			gin.H{"message": "there is no user with this ID"},
+			gin.H{"message": "user associated with token doesn't exist"},
 		)
 	} else {
 		context.IndentedJSON(

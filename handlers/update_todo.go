@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
+	"github.com/tim-w97/my-awesome-Todo-API/util"
 	"log"
 	"net/http"
 )
@@ -42,8 +43,20 @@ func UpdateTodo(context *gin.Context) {
 		return
 	}
 
+	sql, err := util.ReadSQLFile("update_todo.sql")
+
+	if err != nil {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't read SQL"},
+		)
+
+		log.Print(err)
+		return
+	}
+
 	_, updateErr := db.Database.Exec(
-		"UPDATE todo SET title = ?, text = ? WHERE id = ? AND userID = ?",
+		sql,
 		updatedTodo.Title,
 		updatedTodo.Text,
 		updatedTodo.ID,

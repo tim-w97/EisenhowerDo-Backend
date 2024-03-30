@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
+	"github.com/tim-w97/my-awesome-Todo-API/util"
 	"log"
 	"net/http"
 )
@@ -23,8 +24,20 @@ func ShareTodo(context *gin.Context) {
 
 	sharedTodo.TodoID = context.GetInt("todoID")
 
+	sql, err := util.ReadSQLFile("share_todo.sql")
+
+	if err != nil {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't read SQL"},
+		)
+
+		log.Print(err)
+		return
+	}
+
 	_, insertErr := db.Database.Exec(
-		"INSERT INTO sharedTodo (todoID, otherUserID) VALUES (?, ?)",
+		sql,
 		sharedTodo.TodoID,
 		sharedTodo.OtherUserID,
 	)

@@ -12,8 +12,20 @@ import (
 func searchUsername(username string, context *gin.Context) (bool, error) {
 	var usernameCount int
 
+	sql, err := util.ReadSQLFile("count_username.sql")
+
+	if err != nil {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't read SQL"},
+		)
+
+		log.Print(err)
+		return false, err
+	}
+
 	row := db.Database.QueryRow(
-		"SELECT COUNT(*) FROM user WHERE username = ?",
+		sql,
 		username,
 	)
 
@@ -64,8 +76,20 @@ func Register(context *gin.Context) {
 
 	passwordHash := util.GetPasswordHash(userToRegister.Password)
 
+	sql, err := util.ReadSQLFile("create_user.sql")
+
+	if err != nil {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't read SQL"},
+		)
+
+		log.Print(err)
+		return
+	}
+
 	_, insertErr := db.Database.Exec(
-		"INSERT INTO user (username, password) VALUES (?, ?)",
+		sql,
 		userToRegister.Username,
 		passwordHash,
 	)

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
+	"github.com/tim-w97/my-awesome-Todo-API/util"
 	"log"
 	"net/http"
 )
@@ -14,8 +15,20 @@ func GetTodos(context *gin.Context) {
 
 	userID := context.GetInt("userID")
 
+	sql, err := util.ReadSQLFile("get_todos.sql")
+
+	if err != nil {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't read SQL"},
+		)
+
+		log.Print(err)
+		return
+	}
+
 	rows, queryErr := db.Database.Query(
-		"SELECT * FROM todo WHERE userID = ? ORDER BY position",
+		sql,
 		userID,
 	)
 

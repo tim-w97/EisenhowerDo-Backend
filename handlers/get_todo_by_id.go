@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
+	"github.com/tim-w97/my-awesome-Todo-API/util"
 	"log"
 	"net/http"
 )
@@ -16,8 +17,20 @@ func GetTodoByID(context *gin.Context) {
 	userID := context.GetInt("userID")
 	todoID := context.GetInt("todoID")
 
+	sqlStr, err := util.ReadSQLFile("get_todo_by_id.sql")
+
+	if err != nil {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't read SQL"},
+		)
+
+		log.Print(err)
+		return
+	}
+
 	row := db.Database.QueryRow(
-		"SELECT * FROM todo WHERE id = ? AND userID = ?",
+		sqlStr,
 		todoID,
 		userID,
 	)

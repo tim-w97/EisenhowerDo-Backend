@@ -19,8 +19,20 @@ func searchUser(user types.User, context *gin.Context) (types.User, error) {
 
 	passwordHash := util.GetPasswordHash(user.Password)
 
+	sqlString, err := util.ReadSQLFile("login_user.sql")
+
+	if err != nil {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't read SQL"},
+		)
+
+		log.Print(err)
+		return user, err
+	}
+
 	row := db.Database.QueryRow(
-		"SELECT * FROM user WHERE username = ? AND password = ?",
+		sqlString,
 		user.Username,
 		passwordHash,
 	)
