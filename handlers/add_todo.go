@@ -2,47 +2,13 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/tim-w97/my-awesome-Todo-API/api"
 	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
 	"github.com/tim-w97/my-awesome-Todo-API/util"
 	"log"
 	"net/http"
 )
-
-func validateTodo(todo types.Todo, context *gin.Context) (isValid bool) {
-	if len(todo.Title) == 0 {
-		context.IndentedJSON(
-			http.StatusBadRequest,
-			gin.H{"message": "please add a title"},
-		)
-
-		isValid = false
-		return
-	}
-
-	if len(todo.Text) == 0 {
-		context.IndentedJSON(
-			http.StatusBadRequest,
-			gin.H{"message": "please add a text"},
-		)
-
-		isValid = false
-		return
-	}
-
-	if todo.CategoryID == 0 {
-		context.IndentedJSON(
-			http.StatusBadRequest,
-			gin.H{"message": "please add a category ID"},
-		)
-
-		isValid = false
-		return
-	}
-
-	isValid = true
-	return
-}
 
 func AddTodo(context *gin.Context) {
 	var newTodo types.Todo
@@ -58,7 +24,7 @@ func AddTodo(context *gin.Context) {
 		return
 	}
 
-	if isValid := validateTodo(newTodo, context); !isValid {
+	if isValid := api.ValidateTodo(newTodo, context); !isValid {
 		return
 	}
 

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/tim-w97/my-awesome-Todo-API/api"
 	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
 	"github.com/tim-w97/my-awesome-Todo-API/util"
@@ -25,30 +26,7 @@ func UpdateTodo(context *gin.Context) {
 	updatedTodo.ID = context.GetInt("todoID")
 	updatedTodo.UserID = context.GetInt("userID")
 
-	if len(updatedTodo.Title) == 0 {
-		context.IndentedJSON(
-			http.StatusBadRequest,
-			gin.H{"message": "please add a title"},
-		)
-
-		return
-	}
-
-	if len(updatedTodo.Text) == 0 {
-		context.IndentedJSON(
-			http.StatusBadRequest,
-			gin.H{"message": "please add a text"},
-		)
-
-		return
-	}
-
-	if updatedTodo.CategoryID == 0 {
-		context.IndentedJSON(
-			http.StatusBadRequest,
-			gin.H{"message": "please add a category ID"},
-		)
-
+	if isValid := api.ValidateTodo(updatedTodo, context); !isValid {
 		return
 	}
 
