@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/tim-w97/my-awesome-Todo-API/api"
 	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
 	"github.com/tim-w97/my-awesome-Todo-API/util"
+	"github.com/tim-w97/my-awesome-Todo-API/validation"
 	"log"
 	"net/http"
 )
@@ -24,7 +24,7 @@ func AddTodo(context *gin.Context) {
 		return
 	}
 
-	if isValid := api.ValidateTodo(newTodo, context); !isValid {
+	if isValid := validation.ValidateTodo(newTodo, context); !isValid {
 		return
 	}
 

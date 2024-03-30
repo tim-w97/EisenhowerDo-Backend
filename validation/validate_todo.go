@@ -1,4 +1,4 @@
-package api
+package validation
 
 import (
 	"github.com/gin-gonic/gin"

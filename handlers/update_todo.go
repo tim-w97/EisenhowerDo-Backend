@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/tim-w97/my-awesome-Todo-API/api"
 	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
 	"github.com/tim-w97/my-awesome-Todo-API/util"
+	"github.com/tim-w97/my-awesome-Todo-API/validation"
 	"log"
 	"net/http"
 )
@@ -26,7 +26,7 @@ func UpdateTodo(context *gin.Context) {
 	updatedTodo.ID = context.GetInt("todoID")
 	updatedTodo.UserID = context.GetInt("userID")
 
-	if isValid := api.ValidateTodo(updatedTodo, context); !isValid {
+	if isValid := validation.ValidateTodo(updatedTodo, context); !isValid {
 		return
 	}
 
