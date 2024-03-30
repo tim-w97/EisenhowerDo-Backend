@@ -19,23 +19,25 @@ func getPositionFromTodo(context *gin.Context) (int, error) {
 		context.GetInt("userID"),
 	)
 
-	if scanErr := row.Scan(&currentPosition); scanErr != nil {
-		if errors.Is(scanErr, sql.ErrNoRows) {
-			context.IndentedJSON(
-				http.StatusNotFound,
-				gin.H{"message": "todo id doesn't exist or you aren't the creator"},
-			)
-		} else {
-			context.IndentedJSON(
-				http.StatusInternalServerError,
-				gin.H{"message": "can't convert position of todo to move"},
-			)
-		}
+	scanErr := row.Scan(&currentPosition)
 
-		return 0, scanErr
+	if scanErr == nil {
+		return currentPosition, nil
 	}
 
-	return currentPosition, nil
+	if errors.Is(scanErr, sql.ErrNoRows) {
+		context.IndentedJSON(
+			http.StatusNotFound,
+			gin.H{"message": "todo id doesn't exist or you aren't the creator"},
+		)
+	} else {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't convert position of todo to move"},
+		)
+	}
+
+	return 0, scanErr
 }
 
 func readDesiredPositionFromBody(context *gin.Context) (int, error) {
