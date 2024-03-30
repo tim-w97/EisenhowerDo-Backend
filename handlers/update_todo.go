@@ -43,6 +43,15 @@ func UpdateTodo(context *gin.Context) {
 		return
 	}
 
+	if updatedTodo.CategoryID == 0 {
+		context.IndentedJSON(
+			http.StatusBadRequest,
+			gin.H{"message": "please add a category ID"},
+		)
+
+		return
+	}
+
 	sql, err := util.ReadSQLFile("update_todo.sql")
 
 	if err != nil {
@@ -59,6 +68,7 @@ func UpdateTodo(context *gin.Context) {
 		sql,
 		updatedTodo.Title,
 		updatedTodo.Text,
+		updatedTodo.CategoryID,
 		updatedTodo.ID,
 		updatedTodo.UserID,
 	)

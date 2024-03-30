@@ -1,5 +1,6 @@
 UPDATE todo
-SET title = ?,
-    text  = ?
+SET title      = ?,
+    text       = ?,
+    categoryID = ?
 WHERE id = ?
   AND userID = ?;
