@@ -13,6 +13,7 @@ import (
 func getPositionFromTodo(context *gin.Context) (int, error) {
 	var currentPosition int
 
+	// TODO: create one sql for this endpoint
 	row := db.Database.QueryRow(
 		"SELECT position FROM todo WHERE id = ? AND userID = ?",
 		context.GetInt("todoID"),
