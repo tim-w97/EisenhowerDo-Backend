@@ -27,6 +27,7 @@ func GetTodoByID(context *gin.Context) {
 		&todo.UserID,
 		&todo.Title,
 		&todo.Text,
+		&todo.CategoryID,
 		&todo.Position,
 		&todo.IsCompleted,
 	)

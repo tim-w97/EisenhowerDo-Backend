@@ -42,13 +42,13 @@ func AddTodo(context *gin.Context) {
 
 	newTodo.UserID = context.GetInt("userID")
 
-	// TODO: Add right position
-	// TODO: Add Todo categories
+	// TODO: Add right position with subselect
 	result, insertErr := db.Database.Exec(
-		"INSERT INTO todo (title, text, userID) VALUES (?, ?, ?)",
+		"INSERT INTO todo (userID, title, text, categoryID) VALUES (?, ?, ?, ?)",
+		newTodo.UserID,
 		newTodo.Title,
 		newTodo.Text,
-		newTodo.UserID,
+		newTodo.CategoryID,
 	)
 
 	if insertErr != nil {
