@@ -4,9 +4,45 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
+	"github.com/tim-w97/my-awesome-Todo-API/util"
 	"log"
 	"net/http"
 )
+
+func validateTodo(todo types.Todo, context *gin.Context) (isValid bool) {
+	if len(todo.Title) == 0 {
+		context.IndentedJSON(
+			http.StatusBadRequest,
+			gin.H{"message": "please add a title"},
+		)
+
+		isValid = false
+		return
+	}
+
+	if len(todo.Text) == 0 {
+		context.IndentedJSON(
+			http.StatusBadRequest,
+			gin.H{"message": "please add a text"},
+		)
+
+		isValid = false
+		return
+	}
+
+	if todo.CategoryID == 0 {
+		context.IndentedJSON(
+			http.StatusBadRequest,
+			gin.H{"message": "please add a category ID"},
+		)
+
+		isValid = false
+		return
+	}
+
+	isValid = true
+	return
+}
 
 func AddTodo(context *gin.Context) {
 	var newTodo types.Todo
@@ -22,29 +58,26 @@ func AddTodo(context *gin.Context) {
 		return
 	}
 
-	if len(newTodo.Title) == 0 {
-		context.IndentedJSON(
-			http.StatusBadRequest,
-			gin.H{"message": "please add a title"},
-		)
-
-		return
-	}
-
-	if len(newTodo.Text) == 0 {
-		context.IndentedJSON(
-			http.StatusBadRequest,
-			gin.H{"message": "please add a text"},
-		)
-
+	if isValid := validateTodo(newTodo, context); !isValid {
 		return
 	}
 
 	newTodo.UserID = context.GetInt("userID")
 
-	// TODO: Add right position with subselect
-	result, insertErr := db.Database.Exec(
-		"INSERT INTO todo (userID, title, text, categoryID) VALUES (?, ?, ?, ?)",
+	sql, err := util.ReadSQLFile("add_todo.sql")
+
+	if err != nil {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't read SQL"},
+		)
+
+		log.Print(err)
+		return
+	}
+
+	_, insertErr := db.Database.Exec(
+		sql,
 		newTodo.UserID,
 		newTodo.Title,
 		newTodo.Text,
@@ -61,19 +94,8 @@ func AddTodo(context *gin.Context) {
 		return
 	}
 
-	insertedID, idErr := result.LastInsertId()
-
-	if idErr != nil {
-		context.IndentedJSON(
-			http.StatusInternalServerError,
-			gin.H{"message": "can't get id of inserted todo"},
-		)
-
-		log.Print(idErr)
-		return
-	}
-
-	newTodo.ID = int(insertedID)
-
-	context.IndentedJSON(http.StatusCreated, newTodo)
+	context.IndentedJSON(
+		http.StatusCreated,
+		gin.H{"message": "created todo successfully"},
+	)
 }
