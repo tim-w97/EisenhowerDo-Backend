@@ -5,4 +5,5 @@ SELECT ? as passedUserID,
        ?,
        IFNULL(
                (SELECT MAX(position) + 1 FROM todo WHERE userID = passedUserID),
-       1);
+               1
+       );
