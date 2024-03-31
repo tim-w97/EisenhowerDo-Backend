@@ -32,6 +32,15 @@ func SetTodoPosition(context *gin.Context) {
 		return
 	}
 
+	if desiredPosition == 0 {
+		context.IndentedJSON(
+			http.StatusBadRequest,
+			gin.H{"message": "please provide your desired position"},
+		)
+		
+		return
+	}
+
 	sql, err := util.ReadSQLFile("set_todo_position.sql")
 
 	if err != nil {
