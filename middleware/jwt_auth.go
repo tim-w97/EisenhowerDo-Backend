@@ -14,7 +14,7 @@ import (
 	"strconv"
 )
 
-func getUserByID(userID int, context *gin.Context) (types.User, error) {
+func getUserByID(userID int, context *gin.Context) (user types.User, ok bool) {
 	var queriedUser types.User
 
 	sqlString, err := util.ReadSQLFile("get_user_by_id.sql")
@@ -25,8 +25,11 @@ func getUserByID(userID int, context *gin.Context) (types.User, error) {
 			gin.H{"message": "can't read SQL"},
 		)
 
+		context.Abort()
 		log.Print(err)
-		return types.User{}, err
+
+		ok = false
+		return
 	}
 
 	row := db.Database.QueryRow(
@@ -37,7 +40,9 @@ func getUserByID(userID int, context *gin.Context) (types.User, error) {
 	scanErr := row.Scan(&queriedUser.ID, &queriedUser.Username, &queriedUser.Password)
 
 	if scanErr == nil {
-		return queriedUser, nil
+		ok = true
+		user = queriedUser
+		return
 	}
 
 	if errors.Is(scanErr, sql.ErrNoRows) {
@@ -52,7 +57,9 @@ func getUserByID(userID int, context *gin.Context) (types.User, error) {
 		)
 	}
 
-	return types.User{}, scanErr
+	log.Print(scanErr)
+	ok = false
+	return
 }
 
 func getSecret(_ *jwt.Token) (interface{}, error) {
@@ -136,11 +143,9 @@ func JWTAuth(context *gin.Context) {
 		return
 	}
 
-	user, searchError := getUserByID(userID, context)
+	user, ok := getUserByID(userID, context)
 
-	if searchError != nil {
-		log.Print(searchError)
-		context.Abort()
+	if !ok {
 		return
 	}
 

@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-func searchUser(user types.User, context *gin.Context) (types.User, error) {
+func searchUser(user types.User, context *gin.Context) (types.User, bool) {
 	var queriedUser types.User
 
 	passwordHash := util.GetPasswordHash(user.Password)
@@ -29,7 +29,7 @@ func searchUser(user types.User, context *gin.Context) (types.User, error) {
 		)
 
 		log.Print(err)
-		return user, err
+		return user, false
 	}
 
 	row := db.Database.QueryRow(
@@ -45,7 +45,7 @@ func searchUser(user types.User, context *gin.Context) (types.User, error) {
 	)
 
 	if scanErr == nil {
-		return queriedUser, nil
+		return queriedUser, true
 	}
 
 	if errors.Is(scanErr, sql.ErrNoRows) {
@@ -61,7 +61,7 @@ func searchUser(user types.User, context *gin.Context) (types.User, error) {
 	}
 
 	log.Print(scanErr)
-	return user, scanErr
+	return user, false
 }
 
 func Login(context *gin.Context) {
@@ -97,10 +97,9 @@ func Login(context *gin.Context) {
 	}
 
 	// search user in database and return it if found
-	user, searchError := searchUser(requestedUser, context)
+	user, ok := searchUser(requestedUser, context)
 
-	if searchError != nil {
-		log.Print(searchError)
+	if !ok {
 		return
 	}
 

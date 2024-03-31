@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func readDesiredPositionFromBody(context *gin.Context) (int, error) {
+func readDesiredPositionFromBody(context *gin.Context) (position int, ok bool) {
 	var desiredPosition types.TodoPosition
 
 	if bindErr := context.BindJSON(&desiredPosition); bindErr != nil {
@@ -19,17 +19,20 @@ func readDesiredPositionFromBody(context *gin.Context) (int, error) {
 			gin.H{"message": "can't read desired todo position from body"},
 		)
 
-		return 0, bindErr
+		log.Print(bindErr)
+		ok = false
+		return
 	}
 
-	return desiredPosition.Position, nil
+	ok = true
+	position = desiredPosition.Position
+	return
 }
 
 func SetTodoPosition(context *gin.Context) {
-	desiredPosition, err := readDesiredPositionFromBody(context)
+	desiredPosition, ok := readDesiredPositionFromBody(context)
 
-	if err != nil {
-		log.Print(err)
+	if !ok {
 		return
 	}
 

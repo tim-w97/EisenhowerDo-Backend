@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func searchUsername(username string, context *gin.Context) (bool, error) {
+func searchUsername(username string, context *gin.Context) (usernameIsTaken bool, ok bool) {
 	var usernameCount int
 
 	sql, err := util.ReadSQLFile("count_username.sql")
@@ -22,13 +22,11 @@ func searchUsername(username string, context *gin.Context) (bool, error) {
 		)
 
 		log.Print(err)
-		return false, err
+		ok = false
+		return
 	}
 
-	row := db.Database.QueryRow(
-		sql,
-		username,
-	)
+	row := db.Database.QueryRow(sql, username)
 
 	if scanErr := row.Scan(&usernameCount); scanErr != nil {
 		context.IndentedJSON(
@@ -36,10 +34,14 @@ func searchUsername(username string, context *gin.Context) (bool, error) {
 			gin.H{"message": "can't convert query result to int"},
 		)
 
-		return false, scanErr
+		log.Print(scanErr)
+		ok = false
+		return
 	}
 
-	return usernameCount > 0, nil
+	usernameIsTaken = usernameCount > 0
+	ok = true
+	return
 }
 
 func Register(context *gin.Context) {
@@ -56,13 +58,12 @@ func Register(context *gin.Context) {
 		return
 	}
 
-	usernameIsTaken, err := searchUsername(
+	usernameIsTaken, ok := searchUsername(
 		userToRegister.Username,
 		context,
 	)
 
-	if err != nil {
-		log.Print(err)
+	if !ok {
 		return
 	}
 
