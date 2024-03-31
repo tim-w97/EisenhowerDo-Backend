@@ -37,7 +37,7 @@ func SetTodoPosition(context *gin.Context) {
 			http.StatusBadRequest,
 			gin.H{"message": "please provide your desired position"},
 		)
-		
+
 		return
 	}
 

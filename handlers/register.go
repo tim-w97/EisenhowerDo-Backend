@@ -32,7 +32,7 @@ func searchUsername(username string, context *gin.Context) (bool, error) {
 	if scanErr := row.Scan(&usernameCount); scanErr != nil {
 		context.IndentedJSON(
 			http.StatusNotFound,
-			gin.H{"message": "can't assign user row to user struct"},
+			gin.H{"message": "can't convert query result to int"},
 		)
 
 		return false, scanErr
