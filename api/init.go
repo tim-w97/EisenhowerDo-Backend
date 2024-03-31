@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/tim-w97/my-awesome-Todo-API/middleware"
 	"log"
 	"os"
 )
@@ -10,6 +11,8 @@ import (
 func InitEndpointsAndRun() {
 	// Set up router
 	router := gin.Default()
+	router.Use(middleware.SetHeaders)
+
 	initEndpoints(router)
 
 	port := os.Getenv("PORT")

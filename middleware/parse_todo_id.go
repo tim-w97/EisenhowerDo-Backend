@@ -34,4 +34,7 @@ func ParseTodoID(context *gin.Context) {
 	}
 
 	context.Set("todoID", id)
+
+	// Continue with the request if everything goes well
+	context.Next()
 }
