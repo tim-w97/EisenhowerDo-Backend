@@ -10,11 +10,10 @@ import (
 	"net/http"
 )
 
-func getPositionFromTodo(context *gin.Context) (int, error) {
+func getPositionFromTodo(transaction *sql.Tx, context *gin.Context) (int, error) {
 	var currentPosition int
 
-	// TODO: create one sql for this endpoint
-	row := db.Database.QueryRow(
+	row := transaction.QueryRow(
 		"SELECT position FROM todo WHERE id = ? AND userID = ?",
 		context.GetInt("todoID"),
 		context.GetInt("userID"),
@@ -56,7 +55,7 @@ func readDesiredPositionFromBody(context *gin.Context) (int, error) {
 	return desiredPosition.Position, nil
 }
 
-func shiftOtherTodos(currentPosition, desiredPosition int, context *gin.Context) error {
+func shiftOtherTodos(transaction *sql.Tx, currentPosition, desiredPosition int, context *gin.Context) error {
 	var updateOtherTodosSQL string
 
 	if desiredPosition > currentPosition {
@@ -71,7 +70,7 @@ func shiftOtherTodos(currentPosition, desiredPosition int, context *gin.Context)
 			"UPDATE todo SET position = position + 1 WHERE position < ? AND position >= ? AND userID = ?"
 	}
 
-	_, updateErr := db.Database.Exec(
+	_, updateErr := transaction.Exec(
 		updateOtherTodosSQL,
 		currentPosition,
 		desiredPosition,
@@ -90,8 +89,8 @@ func shiftOtherTodos(currentPosition, desiredPosition int, context *gin.Context)
 	return nil
 }
 
-func updatePosition(desiredPosition int, context *gin.Context) error {
-	_, updateErr := db.Database.Exec(
+func updatePosition(transaction *sql.Tx, desiredPosition int, context *gin.Context) error {
+	_, updateErr := transaction.Exec(
 		"UPDATE todo SET position = ? WHERE id = ? AND userID = ?",
 		desiredPosition,
 		context.GetInt("todoID"),
@@ -110,18 +109,41 @@ func updatePosition(desiredPosition int, context *gin.Context) error {
 	return nil
 }
 
-func ChangeTodoPosition(context *gin.Context) {
-	currentPosition, scanErr := getPositionFromTodo(context)
+func doRollback(transaction *sql.Tx) {
+	if err := transaction.Rollback(); err != nil {
+		log.Print(err)
+	}
+}
 
-	if scanErr != nil {
-		log.Print(scanErr)
+func ChangeTodoPosition(context *gin.Context) {
+	// Changing the position of a todos requires multiple operations
+	// To maintain database integrity, I use a transaction here
+
+	transaction, err := db.Database.Begin()
+
+	if err != nil {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't create a transaction"},
+		)
+
+		log.Print(err)
 		return
 	}
 
-	desiredPosition, bindErr := readDesiredPositionFromBody(context)
+	currentPosition, err := getPositionFromTodo(transaction, context)
 
-	if bindErr != nil {
-		log.Print(bindErr)
+	if err != nil {
+		log.Print(err)
+		doRollback(transaction)
+		return
+	}
+
+	desiredPosition, err := readDesiredPositionFromBody(context)
+
+	if err != nil {
+		log.Print(err)
+		doRollback(transaction)
 		return
 	}
 
@@ -131,15 +153,29 @@ func ChangeTodoPosition(context *gin.Context) {
 			gin.H{"message": "this todo is already at the desired position"},
 		)
 
+		doRollback(transaction)
 		return
 	}
 
-	if err := shiftOtherTodos(currentPosition, desiredPosition, context); err != nil {
+	if err := shiftOtherTodos(transaction, currentPosition, desiredPosition, context); err != nil {
 		log.Print(err)
+		doRollback(transaction)
 		return
 	}
 
-	if err := updatePosition(desiredPosition, context); err != nil {
+	if err := updatePosition(transaction, desiredPosition, context); err != nil {
+		log.Print(err)
+		doRollback(transaction)
+		return
+	}
+
+	// Commit the transaction
+	if err := transaction.Commit(); err != nil {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't commit transaction"},
+		)
+
 		log.Print(err)
 		return
 	}
