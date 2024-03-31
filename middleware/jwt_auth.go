@@ -11,7 +11,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 )
 
 func getUserByID(userID int, context *gin.Context) (types.User, error) {
@@ -77,6 +76,16 @@ func JWTAuth(context *gin.Context) {
 
 	token, parseError := jwt.Parse(tokenString, getSecret)
 
+	if errors.Is(parseError, jwt.ErrTokenExpired) {
+		context.IndentedJSON(
+			http.StatusUnauthorized,
+			gin.H{"message": "token is expired"},
+		)
+
+		context.Abort()
+		return
+	}
+
 	if parseError != nil {
 		context.IndentedJSON(
 			http.StatusUnauthorized,
@@ -88,16 +97,6 @@ func JWTAuth(context *gin.Context) {
 		return
 	}
 
-	if !token.Valid {
-		context.IndentedJSON(
-			http.StatusUnauthorized,
-			gin.H{"message": "token is invalid"},
-		)
-
-		context.Abort()
-		return
-	}
-
 	// Get the claims from the token
 	claims, ok := token.Claims.(jwt.MapClaims)
 
@@ -105,21 +104,6 @@ func JWTAuth(context *gin.Context) {
 		context.IndentedJSON(
 			http.StatusUnauthorized,
 			gin.H{"message": "can't get claims from token"},
-		)
-
-		context.Abort()
-		return
-	}
-
-	// TODO: check if that works correctly!
-	// Check if the token is expired
-	currentTime := float64(time.Now().Unix())
-	tokenExpireTime := claims["exp"].(float64)
-
-	if currentTime > tokenExpireTime {
-		context.IndentedJSON(
-			http.StatusUnauthorized,
-			gin.H{"message": "token is expired"},
 		)
 
 		context.Abort()
