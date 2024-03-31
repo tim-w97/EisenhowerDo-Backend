@@ -5,6 +5,7 @@ import (
 	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
 	"github.com/tim-w97/my-awesome-Todo-API/util"
+	"github.com/tim-w97/my-awesome-Todo-API/validation"
 	"log"
 	"net/http"
 )
@@ -88,7 +89,7 @@ func Register(context *gin.Context) {
 		return
 	}
 
-	_, insertErr := db.Database.Exec(
+	result, insertErr := db.Database.Exec(
 		sql,
 		userToRegister.Username,
 		passwordHash,
@@ -101,6 +102,10 @@ func Register(context *gin.Context) {
 		)
 
 		log.Print(insertErr)
+		return
+	}
+
+	if ok := validation.ValidateSQLResult(result, context); !ok {
 		return
 	}
 

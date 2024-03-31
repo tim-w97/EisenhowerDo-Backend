@@ -5,6 +5,7 @@ import (
 	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
 	"github.com/tim-w97/my-awesome-Todo-API/util"
+	"github.com/tim-w97/my-awesome-Todo-API/validation"
 	"log"
 	"net/http"
 )
@@ -53,7 +54,7 @@ func SetTodoPosition(context *gin.Context) {
 		return
 	}
 
-	_, updateErr := db.Database.Exec(
+	result, updateErr := db.Database.Exec(
 		sql,
 		context.GetInt("todoID"),
 		desiredPosition,
@@ -66,6 +67,10 @@ func SetTodoPosition(context *gin.Context) {
 		)
 
 		log.Print(updateErr)
+		return
+	}
+
+	if ok := validation.ValidateSQLResult(result, context); !ok {
 		return
 	}
 

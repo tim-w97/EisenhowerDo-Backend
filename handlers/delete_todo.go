@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/util"
+	"github.com/tim-w97/my-awesome-Todo-API/validation"
 	"log"
 	"net/http"
 )
@@ -24,7 +25,7 @@ func DeleteTodo(context *gin.Context) {
 		return
 	}
 
-	_, deleteErr := db.Database.Exec(
+	result, deleteErr := db.Database.Exec(
 		sql,
 		todoID,
 		userID,
@@ -37,6 +38,10 @@ func DeleteTodo(context *gin.Context) {
 		)
 
 		log.Print(deleteErr)
+		return
+	}
+
+	if ok := validation.ValidateSQLResult(result, context); !ok {
 		return
 	}
 

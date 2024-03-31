@@ -5,6 +5,7 @@ import (
 	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
 	"github.com/tim-w97/my-awesome-Todo-API/util"
+	"github.com/tim-w97/my-awesome-Todo-API/validation"
 	"log"
 	"net/http"
 )
@@ -34,7 +35,7 @@ func SetTodoStatus(context *gin.Context) {
 		return
 	}
 
-	_, updateErr := db.Database.Exec(
+	result, updateErr := db.Database.Exec(
 		sql,
 		todoStatus.IsCompleted,
 		context.GetInt("todoID"),
@@ -48,6 +49,10 @@ func SetTodoStatus(context *gin.Context) {
 		)
 
 		log.Print(updateErr)
+		return
+	}
+
+	if ok := validation.ValidateSQLResult(result, context); !ok {
 		return
 	}
 

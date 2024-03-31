@@ -42,7 +42,7 @@ func AddTodo(context *gin.Context) {
 		return
 	}
 
-	_, insertErr := db.Database.Exec(
+	result, insertErr := db.Database.Exec(
 		sql,
 		newTodo.UserID,
 		newTodo.Title,
@@ -57,6 +57,10 @@ func AddTodo(context *gin.Context) {
 		)
 
 		log.Print(insertErr)
+		return
+	}
+
+	if ok := validation.ValidateSQLResult(result, context); !ok {
 		return
 	}
 

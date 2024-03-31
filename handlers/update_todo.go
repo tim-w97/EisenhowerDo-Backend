@@ -42,8 +42,7 @@ func UpdateTodo(context *gin.Context) {
 		return
 	}
 
-	// TODO: create a helper function to check the results of all inserts or updates
-	_, updateErr := db.Database.Exec(
+	result, updateErr := db.Database.Exec(
 		sql,
 		updatedTodo.Title,
 		updatedTodo.Text,
@@ -59,6 +58,10 @@ func UpdateTodo(context *gin.Context) {
 		)
 
 		log.Print(updateErr)
+		return
+	}
+
+	if ok := validation.ValidateSQLResult(result, context); !ok {
 		return
 	}
 
