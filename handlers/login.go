@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/tim-w97/my-awesome-Todo-API/db"
@@ -106,7 +107,7 @@ func Login(context *gin.Context) {
 	// Generate the JSON Web Token and add the username to the claims
 	// The token expires after 1 hour
 	claims := jwt.MapClaims{
-		"sub": user.ID,
+		"sub": fmt.Sprintf("%d", user.ID),
 		"exp": time.Now().Add(time.Hour).Unix(),
 	}
 

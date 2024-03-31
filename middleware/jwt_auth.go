@@ -11,6 +11,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 func getUserByID(userID int, context *gin.Context) (types.User, error) {
@@ -110,10 +111,30 @@ func JWTAuth(context *gin.Context) {
 		return
 	}
 
-	// Get the user id from the tokens subject and search the corresponding user
-	// JSON package parses numbers as float64, so we need to convert the subject back to int
-	subject := claims["sub"].(float64)
-	userID := int(subject)
+	// the subject holds the id of the logged-in user
+	subject, err := claims.GetSubject()
+
+	if err != nil {
+		context.IndentedJSON(
+			http.StatusUnauthorized,
+			gin.H{"message": "can't get subject from token"},
+		)
+
+		context.Abort()
+		return
+	}
+
+	userID, err := strconv.Atoi(subject)
+
+	if err != nil {
+		context.IndentedJSON(
+			http.StatusUnauthorized,
+			gin.H{"message": "can't convert subject to user ID"},
+		)
+
+		context.Abort()
+		return
+	}
 
 	user, searchError := getUserByID(userID, context)
 
