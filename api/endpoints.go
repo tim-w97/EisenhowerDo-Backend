@@ -34,7 +34,7 @@ func initAuthorizedEndpoints(router *gin.Engine) {
 	withTodoID.PUT("/", handlers.UpdateTodo)
 
 	// Change the list position of a Todo
-	withTodoID.PUT("/position", handlers.ChangeTodoPosition)
+	withTodoID.PUT("/position", handlers.SetTodoPosition)
 
 	// Toggle a Todo as completed or uncompleted
 	withTodoID.PUT("/status", handlers.SetTodoStatus)
