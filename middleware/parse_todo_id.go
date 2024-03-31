@@ -28,7 +28,7 @@ func ParseTodoID(context *gin.Context) {
 			gin.H{"message": "please send a valid todo ID in integer format"},
 		)
 
-		log.Print(convertErr.Error())
+		log.Print(convertErr)
 		context.Abort()
 		return
 	}

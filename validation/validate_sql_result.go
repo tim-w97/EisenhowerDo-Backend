@@ -16,7 +16,7 @@ func ValidateSQLResult(result sql.Result, context *gin.Context) (ok bool) {
 			gin.H{"message": "can't count affected rows"},
 		)
 
-		log.Print(err.Error())
+		log.Print(err)
 		return false
 	}
 

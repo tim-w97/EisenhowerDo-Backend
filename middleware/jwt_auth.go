@@ -70,7 +70,7 @@ func JWTAuth(context *gin.Context) {
 			gin.H{"message": "can't get token from cookie"},
 		)
 
-		log.Print(cookieError.Error())
+		log.Print(cookieError)
 		context.Abort()
 		return
 	}
@@ -83,7 +83,7 @@ func JWTAuth(context *gin.Context) {
 			gin.H{"message": "can't parse token"},
 		)
 
-		log.Print(parseError.Error())
+		log.Print(parseError)
 		context.Abort()
 		return
 	}
@@ -134,8 +134,7 @@ func JWTAuth(context *gin.Context) {
 	user, searchError := getUserByID(userID, context)
 
 	if searchError != nil {
-		// TODO: check if I call .Error() everywhere
-		log.Print(searchError.Error())
+		log.Print(searchError)
 		context.Abort()
 		return
 	}
