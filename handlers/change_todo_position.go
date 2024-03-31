@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tim-w97/my-awesome-Todo-API/db"
 	"github.com/tim-w97/my-awesome-Todo-API/types"
+	"github.com/tim-w97/my-awesome-Todo-API/util"
 	"log"
 	"net/http"
 )
@@ -13,8 +14,19 @@ import (
 func getPositionFromTodo(transaction *sql.Tx, context *gin.Context) (int, error) {
 	var currentPosition int
 
+	sqlString, err := util.ReadSQLFile("get_todo_position.sql")
+
+	if err != nil {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't read SQL"},
+		)
+
+		return 0, err
+	}
+
 	row := transaction.QueryRow(
-		"SELECT position FROM todo WHERE id = ? AND userID = ?",
+		sqlString,
 		context.GetInt("todoID"),
 		context.GetInt("userID"),
 	)
@@ -56,22 +68,27 @@ func readDesiredPositionFromBody(context *gin.Context) (int, error) {
 }
 
 func shiftOtherTodos(transaction *sql.Tx, currentPosition, desiredPosition int, context *gin.Context) error {
-	var updateOtherTodosSQL string
+	var sqlFileName string
 
-	if desiredPosition > currentPosition {
-		// The user want's to move the Todo item "down",
-		// so I have to decrement the positions of all todos between current position and desired position
-		updateOtherTodosSQL =
-			"UPDATE todo SET position = position - 1 WHERE position > ? AND position <= ? AND userID = ?"
+	if desiredPosition < currentPosition {
+		sqlFileName = "incr_todo_positions.sql"
 	} else {
-		// The user want's to move the Todo item "up",
-		// so I have to increment the positions of all todos between current position and desired position
-		updateOtherTodosSQL =
-			"UPDATE todo SET position = position + 1 WHERE position < ? AND position >= ? AND userID = ?"
+		sqlFileName = "decr_todo_positions.sql"
+	}
+
+	sqlString, err := util.ReadSQLFile(sqlFileName)
+
+	if err != nil {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't read SQL"},
+		)
+
+		return err
 	}
 
 	_, updateErr := transaction.Exec(
-		updateOtherTodosSQL,
+		sqlString,
 		currentPosition,
 		desiredPosition,
 		context.GetInt("userID"),
@@ -90,8 +107,19 @@ func shiftOtherTodos(transaction *sql.Tx, currentPosition, desiredPosition int, 
 }
 
 func updatePosition(transaction *sql.Tx, desiredPosition int, context *gin.Context) error {
+	sqlString, err := util.ReadSQLFile("update_todo_position.sql")
+
+	if err != nil {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't read SQL"},
+		)
+
+		return err
+	}
+
 	_, updateErr := transaction.Exec(
-		"UPDATE todo SET position = ? WHERE id = ? AND userID = ?",
+		sqlString,
 		desiredPosition,
 		context.GetInt("todoID"),
 		context.GetInt("userID"),
