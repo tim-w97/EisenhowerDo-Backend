@@ -52,12 +52,12 @@ func searchUser(user types.User, context *gin.Context) (types.User, error) {
 			http.StatusNotFound,
 			gin.H{"message": "incorrect username or password"},
 		)
+	} else {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't assign user row to user struct"},
+		)
 	}
-
-	context.IndentedJSON(
-		http.StatusInternalServerError,
-		gin.H{"message": "can't assign user row to user struct"},
-	)
 
 	log.Print(scanErr)
 	return user, scanErr
