@@ -62,10 +62,16 @@ func getUserByID(userID int, context *gin.Context) (user types.User, ok bool) {
 	return
 }
 
-func getSecret(_ *jwt.Token) (interface{}, error) {
-	// I could use the token here to check if the used algorithm is the one I expect
-	secret := os.Getenv("SECRET")
-	return []byte(secret), nil
+func getSecret(token *jwt.Token) (secret interface{}, error error) {
+	// check if the signing method is the right one
+	if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+		error = errors.New("unexpected signing method")
+		return
+	}
+
+	secret = []byte(os.Getenv("SECRET"))
+	error = nil
+	return
 }
 
 func JWTAuth(context *gin.Context) {
