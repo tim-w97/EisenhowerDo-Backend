@@ -23,7 +23,7 @@ func ValidateSQLResult(result sql.Result, context *gin.Context) (ok bool) {
 	if rowsAffected == 0 {
 		context.IndentedJSON(
 			http.StatusNotFound,
-			gin.H{"message": "affected no rows"},
+			gin.H{"message": "no changes were made"},
 		)
 
 		return false
