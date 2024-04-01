@@ -58,6 +58,13 @@ func initEndpoints(router *gin.Engine) {
 		handlers.DeleteTodo,
 	)
 
+	router.PUT(
+		"/todos/:id/status",
+		middleware.JWTAuth,
+		middleware.ParseTodoID,
+		handlers.SetTodoStatus,
+	)
+
 	router.POST(
 		"/todos/:id/share",
 		middleware.JWTAuth,
@@ -71,12 +78,4 @@ func initEndpoints(router *gin.Engine) {
 		middleware.ParseTodoID,
 		handlers.SetTodoPosition,
 	)
-
-	router.PUT(
-		"/todos/:id/status",
-		middleware.JWTAuth,
-		middleware.ParseTodoID,
-		handlers.SetTodoStatus,
-	)
-
 }

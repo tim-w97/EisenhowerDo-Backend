@@ -117,7 +117,7 @@ func Login(context *gin.Context) {
 
 	if signError != nil {
 		context.IndentedJSON(
-			http.StatusBadRequest,
+			http.StatusInternalServerError,
 			gin.H{"message": "can't generate token"},
 		)
 

@@ -6,7 +6,7 @@ import (
 )
 
 func Logout(context *gin.Context) {
-	// Tell the browser to delete the Cookie with the JWT token
+	// Tell the browser to delete the HTTP Only Cookie with the JWT token
 	// by setting the value to an empty string and max age to a negative number
 	context.SetCookie(
 		"Authorization",

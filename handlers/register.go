@@ -30,7 +30,7 @@ func searchUsername(username string, context *gin.Context) (usernameIsTaken bool
 
 	if scanErr := row.Scan(&usernameCount); scanErr != nil {
 		context.IndentedJSON(
-			http.StatusNotFound,
+			http.StatusInternalServerError,
 			gin.H{"message": "can't convert query result to int"},
 		)
 
