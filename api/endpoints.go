@@ -20,6 +20,11 @@ func initEndpoints(router *gin.Engine) {
 		handlers.Login,
 	)
 
+	router.POST(
+		"/logout",
+		handlers.Logout,
+	)
+
 	router.GET(
 		"/todos",
 		middleware.JWTAuth,
