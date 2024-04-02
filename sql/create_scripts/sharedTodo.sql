@@ -12,5 +12,5 @@ CREATE TABLE sharedTodo
 );
 
 INSERT INTO sharedTodo (todoID, otherUserID)
-VALUES (1, 1),
+VALUES (1, 2),
        (3, 2);
