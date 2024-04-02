@@ -27,8 +27,10 @@ func GetTodos(context *gin.Context) {
 		return
 	}
 
+	// I need to pass the userID twice to also select the shared todos, see get_todos.sql
 	rows, queryErr := db.Database.Query(
 		sql,
+		userID,
 		userID,
 	)
 

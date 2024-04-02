@@ -1,4 +1,7 @@
 SELECT *
 FROM todo
 WHERE userID = ?
-ORDER BY position;
+   OR id IN
+      (SELECT todoID
+       FROM sharedTodo
+       WHERE otherUserID = ?);
