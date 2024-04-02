@@ -17,6 +17,6 @@ CREATE TABLE todo
 );
 
 INSERT INTO todo (userID, title, text, categoryID, position)
-VALUES (3, 'Einkaufen', 'Ich brauch noch Toastbrot und Nutella', 1, 1),
-       (3, 'Geschenk für Oma kaufen', 'Ideen: Orchidee, Pralinen, Käsekuchen', 2, 2),
-       (3, 'Bewegen', 'Wenigstens draußen eine Runde um den Block', 2, 3);
+VALUES (1, 'Einkaufen', 'Ich brauch noch Toastbrot und Nutella', 1, 1),
+       (1, 'Geschenk für Oma kaufen', 'Ideen: Orchidee, Pralinen, Käsekuchen', 2, 2),
+       (1, 'Bewegen', 'Wenigstens draußen eine Runde um den Block', 2, 3);

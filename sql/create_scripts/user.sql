@@ -11,6 +11,5 @@ CREATE TABLE user
 
 INSERT INTO user
     (username, password)
-VALUES ('paula', SHA2('ananas', 512)),
-       ('ronny', SHA2('benz', 512)),
-       ('lisa', SHA2('blume', 512));
+VALUES ('lisa', SHA2('check', 512)),
+       ('tim', SHA2('golang', 512));

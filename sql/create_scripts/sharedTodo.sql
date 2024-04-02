@@ -13,5 +13,4 @@ CREATE TABLE sharedTodo
 
 INSERT INTO sharedTodo (todoID, otherUserID)
 VALUES (1, 1),
-       (1, 2),
-       (2, 3);
+       (3, 2);
