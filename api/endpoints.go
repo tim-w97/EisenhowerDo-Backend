@@ -10,6 +10,8 @@ func initEndpoints(router *gin.Engine) {
 	// I don't use grouping here because there is an issue with grouping routes and middleware
 	// https://github.com/gin-gonic/gin/issues/531
 
+	// Login and Registration
+
 	router.POST(
 		"/register",
 		handlers.Register,
@@ -24,6 +26,8 @@ func initEndpoints(router *gin.Engine) {
 		"/logout",
 		handlers.Logout,
 	)
+
+	// Simple Todo Operations
 
 	router.GET(
 		"/todos",
@@ -58,6 +62,8 @@ func initEndpoints(router *gin.Engine) {
 		handlers.DeleteTodo,
 	)
 
+	// Advanced Todo Operations
+
 	router.PUT(
 		"/todos/:id/status",
 		middleware.JWTAuth,
@@ -77,5 +83,19 @@ func initEndpoints(router *gin.Engine) {
 		middleware.JWTAuth,
 		middleware.ParseTodoID,
 		handlers.SetTodoPosition,
+	)
+
+	// Todo Categories
+
+	router.GET(
+		"/categories",
+		middleware.JWTAuth,
+		handlers.GetCategories,
+	)
+
+	router.POST(
+		"/categories",
+		middleware.JWTAuth,
+		handlers.AddCategory,
 	)
 }
