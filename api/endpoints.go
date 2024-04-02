@@ -98,4 +98,7 @@ func initEndpoints(router *gin.Engine) {
 		middleware.JWTAuth,
 		handlers.AddCategory,
 	)
+
+	// Don't allow deleting categories for now
+	// because they are public and usable for every user
 }
