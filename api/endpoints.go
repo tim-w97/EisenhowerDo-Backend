@@ -85,14 +85,6 @@ func initEndpoints(router *gin.Engine) {
 		handlers.SetTodoPosition,
 	)
 
-	// Shared Todos
-
-	router.GET(
-		"/todos/shared",
-		middleware.JWTAuth,
-		handlers.GetSharedTodos,
-	)
-
 	// Todo Categories
 
 	router.GET(
