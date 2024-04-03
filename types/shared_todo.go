@@ -1,7 +1,7 @@
 package types
 
 type SharedTodo struct {
-	ID          int `json:"id"`
-	TodoID      int `json:"todoID"`
-	OtherUserID int `json:"otherUserID"`
+	ID     int `json:"id"`
+	TodoID int `json:"todoID"`
+	UserID int `json:"userID"`
 }

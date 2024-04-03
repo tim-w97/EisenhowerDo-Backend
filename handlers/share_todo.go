@@ -40,7 +40,7 @@ func ShareTodo(context *gin.Context) {
 	result, insertErr := db.Database.Exec(
 		sql,
 		sharedTodo.TodoID,
-		sharedTodo.OtherUserID,
+		sharedTodo.UserID,
 	)
 
 	if insertErr != nil {
