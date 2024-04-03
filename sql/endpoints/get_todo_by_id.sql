@@ -1,4 +1,5 @@
-SELECT *
+SELECT todo.id, userID, title, text, categoryID, position, isCompleted
 FROM todo
-WHERE id = ?
-  AND userID = ?;
+    LEFT JOIN sharedTodo
+    ON todo.id = sharedTodo.todoID
+WHERE todo.id = ? AND ? IN (userID, otherUserID);
