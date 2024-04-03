@@ -112,6 +112,6 @@ func Register(context *gin.Context) {
 
 	context.IndentedJSON(
 		http.StatusCreated,
-		gin.H{"message": "user registered successfully"},
+		gin.H{"message": "user registered successfully, please login"},
 	)
 }
