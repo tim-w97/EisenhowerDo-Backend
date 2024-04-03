@@ -1,2 +1,2 @@
-INSERT INTO sharedTodo (todoID, otherUserID)
+INSERT INTO sharedTodo (todoID, userID)
 VALUES (?, ?);
