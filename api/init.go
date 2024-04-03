@@ -11,8 +11,8 @@ import (
 func InitEndpointsAndRun() {
 	// Set up router
 	router := gin.Default()
-	router.Use(middleware.ConfigureCORS)
 
+	router.Use(middleware.ConfigureCORS)
 	initEndpoints(router)
 
 	port := os.Getenv("PORT")

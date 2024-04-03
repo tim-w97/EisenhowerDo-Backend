@@ -7,7 +7,13 @@ import (
 )
 
 func initEndpoints(router *gin.Engine) {
-	// I don't use grouping here because there is an issue with grouping routes and middleware
+	// Handle not existing routes
+	router.NoRoute(handlers.NoRoute)
+
+	// Handle not allowed methods
+	router.NoMethod(handlers.NoMethod)
+
+	// I don't group my routes because there is an issue with grouping routes and middleware
 	// https://github.com/gin-gonic/gin/issues/531
 
 	// Login and Registration
