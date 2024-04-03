@@ -15,8 +15,11 @@ func InitEndpointsAndRun() {
 	router.Use(middleware.ConfigureCORS)
 	initEndpoints(router)
 
-	port := os.Getenv("PORT")
-	address := fmt.Sprintf("localhost:%s", port)
+	address := fmt.Sprintf(
+		"%s:%s",
+		os.Getenv("HOST"),
+		os.Getenv("PORT"),
+	)
 
 	// Start the router
 	err := router.Run(address)
