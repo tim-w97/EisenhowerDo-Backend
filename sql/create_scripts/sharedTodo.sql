@@ -2,15 +2,15 @@ DROP TABLE IF EXISTS sharedTodo;
 
 CREATE TABLE sharedTodo
 (
-    id          INT auto_increment NOT NULL,
-    todoID      INT                NOT NULL,
-    otherUserID INT                NOT NULL,
+    todoID INT NOT NULL,
+    userID INT NOT NULL,
 
-    PRIMARY KEY (id),
+    PRIMARY KEY (todoID, userID),
+
     FOREIGN KEY (todoID) REFERENCES todo (id),
-    FOREIGN KEY (otherUserID) REFERENCES user (id)
+    FOREIGN KEY (userID) REFERENCES user (id)
 );
 
-INSERT INTO sharedTodo (todoID, otherUserID)
+INSERT INTO sharedTodo (todoID, userID)
 VALUES (1, 2),
        (3, 2);
