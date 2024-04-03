@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func SetHeaders(context *gin.Context) {
+func ConfigureCORS(context *gin.Context) {
 	context.Header(
 		"Access-Control-Allow-Origin",
 		os.Getenv("WEBSITE"),

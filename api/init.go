@@ -11,7 +11,7 @@ import (
 func InitEndpointsAndRun() {
 	// Set up router
 	router := gin.Default()
-	router.Use(middleware.SetHeaders)
+	router.Use(middleware.ConfigureCORS)
 
 	initEndpoints(router)
 
