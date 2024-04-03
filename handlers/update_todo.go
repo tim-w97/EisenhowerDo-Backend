@@ -26,10 +26,6 @@ func UpdateTodo(context *gin.Context) {
 	updatedTodo.ID = context.GetInt("todoID")
 	updatedTodo.UserID = context.GetInt("userID")
 
-	if isValid := validation.ValidateTodo(updatedTodo, context); !isValid {
-		return
-	}
-
 	sql, err := util.ReadSQLFile("update_todo.sql")
 
 	if err != nil {
