@@ -9,13 +9,12 @@ import (
 	"net/http"
 )
 
-func GetTodos(context *gin.Context) {
-	// create an empty slice of todos
-	todos := make([]types.Todo, 0)
+func GetSharedTodos(context *gin.Context) {
+	sharedTodos := make([]types.Todo, 0)
 
 	userID := context.GetInt("userID")
 
-	sql, err := util.ReadSQLFile("get_todos.sql")
+	sql, err := util.ReadSQLFile("get_shared_todos.sql")
 
 	if err != nil {
 		context.IndentedJSON(
@@ -35,7 +34,7 @@ func GetTodos(context *gin.Context) {
 	if queryErr != nil {
 		context.IndentedJSON(
 			http.StatusInternalServerError,
-			gin.H{"message": "can't query todos from database"},
+			gin.H{"message": "can't query shared todos from database"},
 		)
 
 		log.Print(queryErr)
@@ -63,7 +62,7 @@ func GetTodos(context *gin.Context) {
 			return
 		}
 
-		todos = append(todos, todo)
+		sharedTodos = append(sharedTodos, todo)
 	}
 
 	if closeErr := rows.Close(); closeErr != nil {
@@ -80,12 +79,12 @@ func GetTodos(context *gin.Context) {
 	if rowsErr := rows.Err(); rowsErr != nil {
 		context.IndentedJSON(
 			http.StatusInternalServerError,
-			gin.H{"message": "the query for todo rows threw an error"},
+			gin.H{"message": "the query for shared todo rows threw an error"},
 		)
 
 		log.Print(rowsErr)
 		return
 	}
 
-	context.IndentedJSON(http.StatusOK, todos)
+	context.IndentedJSON(http.StatusOK, sharedTodos)
 }
