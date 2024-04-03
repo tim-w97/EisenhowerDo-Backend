@@ -1,3 +1,4 @@
 SELECT *
 FROM todo
-WHERE userID = ?;
+WHERE userID = ?
+ORDER BY position;
