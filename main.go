@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/joho/godotenv"
-	"github.com/tim-w97/my-awesome-Todo-API/api"
-	"github.com/tim-w97/my-awesome-Todo-API/db"
+	"github.com/tim-w97/Todo24-API/api"
+	"github.com/tim-w97/Todo24-API/db"
 	"log"
 )
 

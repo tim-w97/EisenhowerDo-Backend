@@ -3,7 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/tim-w97/my-awesome-Todo-API/middleware"
+	"github.com/tim-w97/Todo24-API/middleware"
 	"log"
 	"os"
 )

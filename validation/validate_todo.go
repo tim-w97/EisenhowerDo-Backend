@@ -2,7 +2,7 @@ package validation
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/tim-w97/my-awesome-Todo-API/types"
+	"github.com/tim-w97/Todo24-API/types"
 	"net/http"
 )
 

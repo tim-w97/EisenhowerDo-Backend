@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/tim-w97/my-awesome-Todo-API/db"
-	"github.com/tim-w97/my-awesome-Todo-API/types"
-	"github.com/tim-w97/my-awesome-Todo-API/util"
-	"github.com/tim-w97/my-awesome-Todo-API/validation"
+	"github.com/tim-w97/Todo24-API/db"
+	"github.com/tim-w97/Todo24-API/types"
+	"github.com/tim-w97/Todo24-API/util"
+	"github.com/tim-w97/Todo24-API/validation"
 	"log"
 	"net/http"
 )

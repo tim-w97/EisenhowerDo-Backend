@@ -2,8 +2,8 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/tim-w97/my-awesome-Todo-API/handlers"
-	"github.com/tim-w97/my-awesome-Todo-API/middleware"
+	"github.com/tim-w97/Todo24-API/handlers"
+	"github.com/tim-w97/Todo24-API/middleware"
 )
 
 func initEndpoints(router *gin.Engine) {
