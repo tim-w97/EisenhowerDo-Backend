@@ -8,4 +8,4 @@ SET todo.position =
         WHEN todo.id = todoToMove.id THEN desiredPosition
         ELSE todo.position
     END
-WHERE userID = 1;
+WHERE userID = ?;

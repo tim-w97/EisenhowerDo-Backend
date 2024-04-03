@@ -61,6 +61,7 @@ func SetTodoPosition(context *gin.Context) {
 		sql,
 		context.GetInt("todoID"),
 		desiredPosition,
+		context.GetInt("userID"),
 	)
 
 	if updateErr != nil {
