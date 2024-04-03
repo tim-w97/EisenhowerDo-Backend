@@ -12,15 +12,16 @@ import (
 var Database *sql.DB
 
 func ConnectToDatabase() {
-	mySQLHost := os.Getenv("MYSQL_HOST")
-	mySQLPort := os.Getenv("MYSQL_PORT")
-	mySQLAddress := fmt.Sprintf("%s:%s", mySQLHost, mySQLPort)
+	mySQLAddress := fmt.Sprintf(
+		"%s:%s",
+		os.Getenv("MYSQL_HOST"),
+		os.Getenv("MYSQL_PORT"),
+	)
 
 	mySQLConfig := mysql.Config{
+		Addr:                 mySQLAddress,
 		User:                 os.Getenv("MYSQL_USER"),
 		Passwd:               os.Getenv("MYSQL_PASS"),
-		Net:                  "tcp",
-		Addr:                 mySQLAddress,
 		DBName:               os.Getenv("MYSQL_DB"),
 		AllowNativePasswords: true,
 	}
