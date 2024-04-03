@@ -23,6 +23,15 @@ func ShareTodo(context *gin.Context) {
 		return
 	}
 
+	if userID := context.GetInt("userID"); userID == sharedTodo.UserID {
+		context.IndentedJSON(
+			http.StatusBadRequest,
+			gin.H{"message": "you can't share a todo with yourself"},
+		)
+
+		return
+	}
+
 	sharedTodo.TodoID = context.GetInt("todoID")
 
 	sql, err := util.ReadSQLFile("share_todo.sql")
