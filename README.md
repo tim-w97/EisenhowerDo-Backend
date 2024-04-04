@@ -14,7 +14,7 @@
 
 <br/>
 
-### Das habe ich alles benutzt
+### Das habe ich benutzt
 
 - Go für die API
 - MySQL für die Datenbank
