@@ -33,6 +33,6 @@
 
 ### Link zur API-Dokumentation
 
-<a href="https://app.swaggerhub.com/apis/TimWagner/Todo24/1.0.0">
+<a href="https://app.swaggerhub.com/apis-docs/TimWagner/Todo24/1.0.0">
   <img width="200px" alt="swagger button" src="https://github.com/tim-w97/Todo24-API/assets/63613014/9ad378fc-aa0a-4de6-b1be-d50057cf7ba6"> 
 </a>
