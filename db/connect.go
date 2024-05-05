@@ -3,7 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	"github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"os"
 )
@@ -12,27 +12,24 @@ import (
 var Database *sql.DB
 
 func ConnectToDatabase() {
-	mySQLAddress := fmt.Sprintf(
-		"%s:%s",
+	connectionString := fmt.Sprintf(
+		"%s:%s@tcp(%s:%s)/%s?allowNativePasswords=true",
+		os.Getenv("MYSQL_USER"),
+		os.Getenv("MYSQL_PASS"),
 		os.Getenv("MYSQL_HOST"),
 		os.Getenv("MYSQL_PORT"),
+		os.Getenv("MYSQL_DB"),
 	)
 
-	mySQLConfig := mysql.Config{
-		Addr:                 mySQLAddress,
-		User:                 os.Getenv("MYSQL_USER"),
-		Passwd:               os.Getenv("MYSQL_PASS"),
-		DBName:               os.Getenv("MYSQL_DB"),
-		AllowNativePasswords: true,
-	}
-
-	// I need to declare dbError outside to avoid a scope issue
-	// on this way, the global Database variable gets assigned
 	var dbError error
-	Database, dbError = sql.Open("mysql", mySQLConfig.FormatDSN())
+
+	Database, dbError = sql.Open(
+		"mysql",
+		connectionString,
+	)
 
 	if dbError != nil {
-		log.Fatal("Can't connect to the MySQL Database")
+		log.Fatal("Can't connect to the MySQL Database", dbError)
 	}
 
 	pingErr := Database.Ping()
