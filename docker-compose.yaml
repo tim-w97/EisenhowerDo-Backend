@@ -14,6 +14,9 @@ services:
     container_name: todo-db
     ports:
       - "3306:3306"
+    restart: always
+    volumes:
+      - ./sql/create_scripts:/docker-entrypoint-initdb.d
     environment:
       MYSQL_DATABASE: ${MYSQL_DB}
       MYSQL_ROOT_PASSWORD: ${MYSQL_PASS}
