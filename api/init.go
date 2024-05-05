@@ -16,8 +16,7 @@ func InitEndpointsAndRun() {
 	initEndpoints(router)
 
 	address := fmt.Sprintf(
-		"%s:%s",
-		os.Getenv("HOST"),
+		":%s",
 		os.Getenv("PORT"),
 	)
 
