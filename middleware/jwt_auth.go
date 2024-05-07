@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 )
 
 func getUserByID(userID int, context *gin.Context) (user types.User, ok bool) {
@@ -74,16 +75,31 @@ func getSecret(token *jwt.Token) (secret interface{}, error error) {
 	return
 }
 
-func JWTAuth(context *gin.Context) {
-	tokenString, cookieError := context.Cookie("Authorization")
+func getTokenFromHeader(header string) (string, error) {
+	if header == "" {
+		return "", errors.New("empty header")
+	}
 
-	if cookieError != nil {
+	jwtToken := strings.Split(header, " ")
+
+	if len(jwtToken) != 2 {
+		return "", errors.New("invalid header")
+	}
+
+	return jwtToken[1], nil
+}
+
+func JWTAuth(context *gin.Context) {
+	tokenString, headerError := getTokenFromHeader(
+		context.GetHeader("Authorization"),
+	)
+
+	if headerError != nil {
 		context.IndentedJSON(
 			http.StatusUnauthorized,
-			gin.H{"message": "can't get token from cookie"},
+			gin.H{"message": headerError.Error()},
 		)
 
-		log.Print(cookieError)
 		context.Abort()
 		return
 	}
