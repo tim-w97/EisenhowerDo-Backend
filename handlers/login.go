@@ -125,19 +125,8 @@ func Login(context *gin.Context) {
 		return
 	}
 
-	// Save the json web token as a http only cookie with a max age of 1 hour
-	context.SetCookie(
-		"Authorization",
-		tokenString,
-		3600,
-		"",
-		"",
-		false,
-		true,
-	)
-
 	context.IndentedJSON(
 		http.StatusOK,
-		gin.H{"message": "login successful"},
+		gin.H{"token": tokenString},
 	)
 }
