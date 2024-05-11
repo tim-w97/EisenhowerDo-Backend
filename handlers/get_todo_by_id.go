@@ -40,9 +40,9 @@ func GetTodoByID(context *gin.Context) {
 		&todo.UserID,
 		&todo.Title,
 		&todo.Text,
+		&todo.IsImportant,
+		&todo.IsUrgent,
 		&todo.CategoryID,
-		&todo.Position,
-		&todo.IsCompleted,
 	)
 
 	if scanErr == nil {

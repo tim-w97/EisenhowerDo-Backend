@@ -49,9 +49,9 @@ func GetSharedTodos(context *gin.Context) {
 			&todo.UserID,
 			&todo.Title,
 			&todo.Text,
+			&todo.IsImportant,
+			&todo.IsUrgent,
 			&todo.CategoryID,
-			&todo.Position,
-			&todo.IsCompleted,
 		); scanErr != nil {
 			context.IndentedJSON(
 				http.StatusInternalServerError,
