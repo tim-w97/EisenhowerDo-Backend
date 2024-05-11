@@ -47,6 +47,8 @@ func AddTodo(context *gin.Context) {
 		newTodo.UserID,
 		newTodo.Title,
 		newTodo.Text,
+		newTodo.IsImportant,
+		newTodo.IsUrgent,
 		newTodo.CategoryID,
 	)
 
