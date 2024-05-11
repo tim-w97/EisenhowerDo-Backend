@@ -16,14 +16,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Current Database: `todos`
---
-
-CREATE DATABASE /*!32312 IF NOT EXISTS*/ `todos` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-
-USE `todos`;
-
---
 -- Table structure for table `category`
 --
 
@@ -70,7 +62,6 @@ CREATE TABLE `sharedTodo` (
 
 LOCK TABLES `sharedTodo` WRITE;
 /*!40000 ALTER TABLE `sharedTodo` DISABLE KEYS */;
-INSERT INTO `sharedTodo` VALUES (1,2),(3,2);
 /*!40000 ALTER TABLE `sharedTodo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -94,7 +85,7 @@ CREATE TABLE `todo` (
   KEY `categoryID` (`categoryID`),
   CONSTRAINT `todo_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `user` (`id`),
   CONSTRAINT `todo_ibfk_2` FOREIGN KEY (`categoryID`) REFERENCES `category` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -103,7 +94,7 @@ CREATE TABLE `todo` (
 
 LOCK TABLES `todo` WRITE;
 /*!40000 ALTER TABLE `todo` DISABLE KEYS */;
-INSERT INTO `todo` VALUES (1,1,'Einkaufen','Ich brauch noch Toastbrot und Nutella',1,1,0),(2,1,'Geschenk für Oma kaufen','Ideen: Orchidee, Pralinen, Käsekuchen',2,2,0),(3,1,'Bewegen','Wenigstens draußen eine Runde um den Block',2,3,0);
+INSERT INTO `todo` VALUES (1,1,'Einkaufen','Ich brauch noch Toastbrot und Nutella',1,1,0),(2,1,'Geschenk für Oma kaufen','Ideen: Orchidee, Pralinen, Käsekuchen',2,2,0),(3,1,'Bewegen','Wenigstens draußen eine Runde um den Block',2,3,0),(4,2,'App Programmieren','Die App muss fertig werden',1,1,0),(5,2,'Backend Programmieren','Das Backend muss fertig werden',1,2,0);
 /*!40000 ALTER TABLE `todo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -141,4 +132,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-05-05 16:49:16
+-- Dump completed on 2024-05-11 14:56:13
