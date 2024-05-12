@@ -110,8 +110,34 @@ func Register(context *gin.Context) {
 		return
 	}
 
+	newUserID, getIDError := result.LastInsertId()
+
+	if getIDError != nil {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't get ID of created user"},
+		)
+
+		log.Print(getIDError)
+		return
+	}
+
+	token, signError := util.GenerateToken(
+		int(newUserID),
+	)
+
+	if signError != nil {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't generate token"},
+		)
+
+		log.Print(signError)
+		return
+	}
+
 	context.IndentedJSON(
 		http.StatusCreated,
-		gin.H{"message": "user registered successfully, please login"},
+		gin.H{"token": token},
 	)
 }
