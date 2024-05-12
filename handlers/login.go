@@ -47,7 +47,7 @@ func searchUser(user types.User, context *gin.Context) (types.User, bool) {
 	if errors.Is(scanErr, sql.ErrNoRows) {
 		context.IndentedJSON(
 			http.StatusNotFound,
-			gin.H{"message": "incorrect username or password"},
+			gin.H{"message": "Benutzername oder Passwort ist falsch"},
 		)
 	} else {
 		context.IndentedJSON(

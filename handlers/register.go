@@ -70,7 +70,7 @@ func Register(context *gin.Context) {
 	if usernameIsTaken {
 		context.IndentedJSON(
 			http.StatusConflict,
-			gin.H{"message": "this username is already taken"},
+			gin.H{"message": "Diesen Benutzernamen gibt es bereits"},
 		)
 
 		return
