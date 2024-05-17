@@ -5,8 +5,20 @@ Eine Go-API zur Verwaltung von Todos
 
 ### So kann das Backend gestartet werden
 
-Zuerst muss Docker installiert und aktiv sein, 
-danach kann mit folgendem Befehl das Backend inkl. 
+Info: Für diese Installationsaleitung benötigen Sie Docker.
+
+Damit das Backend Anfragen an die Datenbank stellen kann, muss eine ```.env``` Datei mit Informationen zur Datenbank erstellt werden.
+
+Im Projekt liegt bereits eine ```.env.example``` Datei, diese können Sie einfach kopieren und umbenennen:
+
+```shell
+$ cp .env.example .env
+```
+
+<br/>
+
+Sobald Docker installiert und aktiv ist, 
+kann mit folgendem Befehl das Backend inkl. 
 MySQL-Datenbank gestartet werden:
 
 ```shell
