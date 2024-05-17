@@ -1,7 +1,19 @@
-# Todo24 API
-### Eine API zur Verwaltung von Todos, mein erstes Go-Projekt 😊
+# EisenhowerDo-Backend
+Eine Go-API zur Verwaltung von Todos
 
-![todo24_gopher](https://github.com/tim-w97/My-awesome-Todo-API/assets/63613014/ab4aced2-1833-40ec-be87-a4bb0cc2f0e4)
+<br/>
+
+### So kann das Backend gestartet werden
+
+Zuerst muss Docker installiert und aktiv sein, 
+danach kann mit folgendem Befehl das Backend inkl. 
+MySQL-Datenbank gestartet werden:
+
+```shell
+$ docker compose up
+```
+
+<br/>
 
 ### Das kann die API
 
@@ -36,9 +48,3 @@
 ![erd](https://github.com/tim-w97/Todo24-API/assets/63613014/142b8630-38b6-496b-9c33-6a26a8e8b50e)
 
 <br/>
-
-### Link zur Dokumentation der API-Endpunkte
-
-<a href="https://app.swaggerhub.com/apis-docs/TimWagner/Todo24/1.0.0">
-  <img width="200px" alt="swagger button" src="https://github.com/tim-w97/Todo24-API/assets/63613014/9ad378fc-aa0a-4de6-b1be-d50057cf7ba6"> 
-</a>
