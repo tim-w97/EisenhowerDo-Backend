@@ -42,7 +42,6 @@ func GetTodoByID(context *gin.Context) {
 		&todo.Text,
 		&todo.IsImportant,
 		&todo.IsUrgent,
-		&todo.CategoryID,
 	)
 
 	if scanErr == nil {

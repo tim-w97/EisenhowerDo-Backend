@@ -1,9 +1,7 @@
 UPDATE todo,
     (SELECT ? AS newTitle) AS newTitle,
-    (SELECT ? AS newText) AS newText,
-    (SELECT ? AS newCategoryID) AS newCategoryID
+    (SELECT ? AS newText) AS newText
 SET title      = IF(newTitle = "", title, newTitle),
-    text       = IF(newText = "", text, newText),
-    categoryID = IF(newCategoryID = 0, categoryID, newCategoryID)
+    text       = IF(newText = "", text, newText)
 WHERE id = ?
   AND userID = ?;

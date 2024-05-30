@@ -28,11 +28,6 @@ func initEndpoints(router *gin.Engine) {
 		handlers.Login,
 	)
 
-	router.POST(
-		"/logout",
-		handlers.Logout,
-	)
-
 	// Simple Todo Operations
 
 	router.GET(
@@ -84,13 +79,6 @@ func initEndpoints(router *gin.Engine) {
 		handlers.ShareTodo,
 	)
 
-	router.PUT(
-		"/todos/:id/position",
-		middleware.JWTAuth,
-		middleware.ParseTodoID,
-		handlers.SetTodoPosition,
-	)
-
 	// Shared Todos
 
 	router.GET(
@@ -98,21 +86,4 @@ func initEndpoints(router *gin.Engine) {
 		middleware.JWTAuth,
 		handlers.GetSharedTodos,
 	)
-
-	// Todo Categories
-
-	router.GET(
-		"/categories",
-		middleware.JWTAuth,
-		handlers.GetCategories,
-	)
-
-	router.POST(
-		"/categories",
-		middleware.JWTAuth,
-		handlers.AddCategory,
-	)
-
-	// Don't allow deleting categories for now
-	// because they are public and usable for every user
 }

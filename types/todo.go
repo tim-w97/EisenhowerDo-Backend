@@ -7,5 +7,4 @@ type Todo struct {
 	Text        string `json:"text"`
 	IsImportant bool   `json:"isImportant"`
 	IsUrgent    bool   `json:"isUrgent"`
-	CategoryID  int    `json:"categoryID"`
 }

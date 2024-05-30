@@ -52,7 +52,7 @@ $ docker compose up
 
 ### So habe ich meine Datenbank entworfen
 
-- Tabellen: user, todo, category, sharedTodo
+- Tabellen: user, todo, sharedTodo
 - sharedTodo enthält die geteilten Todos und löst eine _n:m_ Beziehung auf, weil:
   - ein Benutzer mehrere seiner Todos mit einem anderen Benutzer teilen kann
   - ein Todo mit mehreren Benutzern geteilt werden kann

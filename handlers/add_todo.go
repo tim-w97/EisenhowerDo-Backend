@@ -49,7 +49,6 @@ func AddTodo(context *gin.Context) {
 		newTodo.Text,
 		newTodo.IsImportant,
 		newTodo.IsUrgent,
-		newTodo.CategoryID,
 	)
 
 	if insertErr != nil {

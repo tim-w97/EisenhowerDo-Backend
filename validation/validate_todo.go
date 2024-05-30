@@ -27,16 +27,6 @@ func ValidateTodo(todo types.Todo, context *gin.Context) (isValid bool) {
 		return
 	}
 
-	if todo.CategoryID == 0 {
-		context.IndentedJSON(
-			http.StatusBadRequest,
-			gin.H{"message": "please add a category ID"},
-		)
-
-		isValid = false
-		return
-	}
-
 	isValid = true
 	return
 }
