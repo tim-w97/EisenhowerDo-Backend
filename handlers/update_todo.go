@@ -42,6 +42,8 @@ func UpdateTodo(context *gin.Context) {
 		sql,
 		updatedTodo.Title,
 		updatedTodo.Text,
+		updatedTodo.IsImportant,
+		updatedTodo.IsUrgent,
 		updatedTodo.ID,
 		updatedTodo.UserID,
 	)
