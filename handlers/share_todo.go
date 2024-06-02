@@ -79,7 +79,7 @@ func ShareTodo(context *gin.Context) {
 	if context.GetInt("userID") == userID {
 		context.IndentedJSON(
 			http.StatusBadRequest,
-			gin.H{"message": "you can't share a todo with yourself"},
+			gin.H{"message": "Du kannst kein Todo mit dir selbst teilen"},
 		)
 
 		return
