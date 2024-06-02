@@ -9,9 +9,41 @@ import (
 	"net/http"
 )
 
+func deleteSharedTodo(todoID int) (err error) {
+	sql, err := util.ReadSQLFile("delete_shared_todo.sql")
+
+	if err != nil {
+		return
+	}
+
+	_, deleteErr := db.Database.Exec(
+		sql,
+		todoID,
+	)
+
+	if deleteErr != nil {
+		err = deleteErr
+		return
+	}
+
+	return
+}
+
 func DeleteTodo(context *gin.Context) {
 	userID := context.GetInt("userID")
 	todoID := context.GetInt("todoID")
+
+	deleteSharedTodoErr := deleteSharedTodo(todoID)
+
+	if deleteSharedTodoErr != nil {
+		context.IndentedJSON(
+			http.StatusInternalServerError,
+			gin.H{"message": "can't read SQL"},
+		)
+
+		log.Print(deleteSharedTodoErr)
+		return
+	}
 
 	sql, err := util.ReadSQLFile("delete_todo.sql")
 
