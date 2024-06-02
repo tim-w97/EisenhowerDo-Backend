@@ -105,8 +105,8 @@ func ShareTodo(context *gin.Context) {
 
 	if insertErr != nil {
 		context.IndentedJSON(
-			http.StatusInternalServerError,
-			gin.H{"message": "can't insert shared todo"},
+			http.StatusConflict,
+			gin.H{"message": "Dieses Todo hast du bereits geteilt"},
 		)
 
 		log.Print(insertErr)
